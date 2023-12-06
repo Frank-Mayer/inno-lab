@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"math"
 	"net/http"
 
 	"github.com/go-vgo/robotgo"
@@ -9,9 +11,9 @@ import (
 )
 
 type Message struct {
-	Command string `json:"command"`
-	X       int    `json:"x,omitempty"`
-	Y       int    `json:"y,omitempty"`
+	Command string  `json:"command"`
+	X       float64 `json:"x,omitempty"`
+	Y       float64 `json:"y,omitempty"`
 }
 
 var upgrader = websocket.Upgrader{
@@ -43,15 +45,21 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
 		// parse message
 		var message Message
-		err = conn.ReadJSON(&message)
+		err = json.Unmarshal(p, &message)
 		if err != nil {
 			fmt.Println(err)
-			return
 		}
 
 		switch message.Command {
 		case "click":
-			robotgo.Move(message.X, message.Y)
+			robotgo.MoveClick(int(int(math.Ceil(message.X))), int(int(math.Ceil(message.Y))))
+			robotgo.TypeStrDelay("/imagine Professor lecturing", 500)
+			err = robotgo.KeyTap("enter")
+			if err != nil {
+				fmt.Println(err)
+			}
+		default:
+			fmt.Println("Unknown command " + message.Command)
 		}
 	}
 }
