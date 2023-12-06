@@ -1,0 +1,9 @@
+{
+    "scripts": {
+        "build": "esbuild src/index.ts --bundle --minify --sourcemap --outfile=content.js",
+        "dev": "esbuild src/index.ts --bundle --minify --sourcemap --outfile=content.js --watch"
+    },
+	"devDependencies": {
+		"esbuild": "^0.19.8"
+	}
+}
