@@ -3,7 +3,11 @@
         "build": "esbuild src/index.ts --bundle --minify --sourcemap --outfile=content.js",
         "dev": "esbuild src/index.ts --bundle --minify --sourcemap --outfile=content.js --watch"
     },
-	"devDependencies": {
-		"esbuild": "^0.19.8"
-	}
+    "devDependencies": {
+        "esbuild": "^0.19.8",
+        "ts-proto": "^1.165.0"
+    },
+    "dependencies": {
+        "protobufjs": "^7.2.5"
+    }
 }
