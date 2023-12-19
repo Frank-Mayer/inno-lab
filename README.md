@@ -6,4 +6,3 @@
 [![Yab Project](https://img.shields.io/badge/Yab_Project-2C2D72?logo=lua)](https://github.com/Frank-Mayer/yab)
 
 - `yab run` Start server + build extension for chrome
-- `yab build` Build server + extension for production
