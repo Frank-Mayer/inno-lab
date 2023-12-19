@@ -4,6 +4,7 @@ go 1.21.4
 
 require (
 	github.com/charmbracelet/log v0.3.1
+	github.com/go-vgo/robotgo v0.110.0
 	github.com/gorilla/websocket v1.5.1
 	google.golang.org/protobuf v1.31.0
 )
@@ -14,8 +15,6 @@ require (
 	github.com/gen2brain/shm v0.0.0-20230802011745-f2460f5984f7 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
-	github.com/go-vgo/robotgo v0.110.0 // indirect
-	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/jezek/xgb v1.1.0 // indirect
 	github.com/kbinani/screenshot v0.0.0-20230812210009-b87d31814237 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect

@@ -1,7 +1,6 @@
 package logic
 
 import (
-	"github.com/Frank-Mayer/inno-lab/internal/queue"
 	"github.com/Frank-Mayer/inno-lab/internal/schema"
 	"github.com/charmbracelet/log"
 	"github.com/go-vgo/robotgo"

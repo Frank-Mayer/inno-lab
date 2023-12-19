@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+option go_package = "github.com/Frank-Mayer/inno-lab/internal/schema";
+
+message Res {
+    string prompt = 1;
+    string src = 2;
+    int64 time = 3;
+}
