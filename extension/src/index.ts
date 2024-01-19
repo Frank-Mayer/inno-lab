@@ -11,23 +11,28 @@ function cleanup() {
     alert("Connection to server lost. Please refresh the page.");
 }
 
-intervals.add(
-    window.setInterval(() => {
-        try {
-            const pos = getPromptPos();
-            if (!pos) {
-                return;
-            }
+window.setTimeout(() => {
+    console.debug("Starting prompt position interval");
+    intervals.add(
+        window.setInterval(() => {
+            try {
+                const pos = getPromptPos();
+                console.debug("Prompt pos", pos);
+                if (!pos) {
+                    return;
+                }
 
-            sendInputPos(pos.x, pos.y);
-        } catch (e) {
-            console.error(e);
-            cleanup();
-        }
-    }, 1000),
-);
+                sendInputPos(pos.x, pos.y);
+            } catch (e) {
+                console.error(e);
+                cleanup();
+            }
+        }, 1000),
+    );
+}, 5000);
 
 const reportedMessages = new Set<string>();
+console.debug("Starting message interval");
 intervals.add(
     window.setInterval(() => {
         try {
@@ -39,8 +44,7 @@ intervals.add(
     }, 1000),
 );
 
-const percentRe = /\(((\d+)%|Waiting to start)\)/g;
-
+const startDateTime = Date.now();
 function watchForNewMessages() {
     const messages = Array.from(
         document.querySelectorAll("*[aria-roledescription='Message']"),
@@ -56,12 +60,12 @@ function watchForNewMessages() {
             continue;
         }
         const date = new Date(time);
-        if (date.getTime() < Date.now() - 1000 * 60 * 60 * 24) {
+        if (date.getTime() < startDateTime) {
             continue;
         }
 
         // Ignore messages that are not 100% complete (regex in message.innerHTML)
-        if (percentRe.test(message.innerText)) {
+        if (message.innerHTML.includes("Waiting to start") || message.innerHTML.includes("<span>%</span>")) {
             continue;
         }
 

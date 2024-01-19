@@ -78,7 +78,7 @@ func sendImage(w http.ResponseWriter, r *http.Request) {
 		}
 		tm := time.Unix(res.Time, 0)
 		log.Info("Received image",
-            "time", tm.String(),
+			"time", tm.String(),
 			"prompt", res.Prompt,
 			"image", res.Src,
 		)
@@ -87,16 +87,24 @@ func sendImage(w http.ResponseWriter, r *http.Request) {
 
 func processPrompt(prompt string) {
 	log.Info("Processing prompt", "prompt", prompt)
-	robotgo.KeySleep = 200
+	robotgo.KeySleep = 300
 	robotgo.MouseSleep = 200
+	log.Debug("move click", "x", inputPosX, "y", inputPosY)
+	robotgo.Move(inputPosX, inputPosY)
 	robotgo.MoveClick(inputPosX, inputPosY)
 	robotgo.MoveClick(inputPosX, inputPosY)
-	robotgo.TypeStr("/imagine ")
-	robotgo.TypeStr(prompt)
-	err := robotgo.KeyTap("enter")
-	if err != nil {
-		log.Error("Error sending enter", "error", err)
-	}
+	go func() {
+		log.Debug("sleep")
+		time.Sleep(1 * time.Second)
+		log.Debug("type")
+		robotgo.TypeStr("/imagine ")
+		robotgo.TypeStr(prompt)
+		log.Debug("enter")
+		err := robotgo.KeyTap("enter")
+		if err != nil {
+			log.Error("Error sending enter", "error", err)
+		}
+	}()
 }
 
 func main() {
