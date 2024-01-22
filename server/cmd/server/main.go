@@ -1,10 +1,9 @@
 package main
 
 import (
-	"bufio"
+	"github.com/Frank-Mayer/inno-lab/internal/ui"
 	"net/http"
-	"os"
-	"strings"
+	"sync"
 	"time"
 
 	"github.com/Frank-Mayer/inno-lab/internal/schema"
@@ -100,41 +99,52 @@ func processPrompt(prompt string) {
 }
 
 func main() {
-	log.SetLevel(log.DebugLevel)
-	log.Info("Starting server")
-	http.HandleFunc("/", handleIndex)
-	http.HandleFunc("/set_input_pos", setInputPos)
-	http.HandleFunc("/send_image", sendImage)
 
-	// Start the server on port 8080
+	//window := ui.Init()
+	wg := sync.WaitGroup{}
+	ui.ShowPic()
 	go func() {
-		err := http.ListenAndServe(":8080", nil)
-		if err != nil {
-			log.Error("Server error", "error", err)
-			return
-		}
+		wg.Wait()
 	}()
+	//window.ShowAndRun()
 
-	go func() {
-		for {
-			prompt := <-ch
-			if inputPosX != -1 && inputPosY != -1 {
-				log.Info("Input position set", "x", inputPosX, "y", inputPosY)
-				processPrompt(prompt)
-			} else {
-				log.Warn("Input position not set")
+	/*
+		log.SetLevel(log.DebugLevel)
+		log.Info("Starting server")
+		http.HandleFunc("/", handleIndex)
+		http.HandleFunc("/set_input_pos", setInputPos)
+		http.HandleFunc("/send_image", sendImage)
+
+		// Start the server on port 8080
+		go func() {
+			err := http.ListenAndServe(":8080", nil)
+			if err != nil {
+				log.Error("Server error", "error", err)
+				return
 			}
-		}
-	}()
+		}()
 
-	// wait for user input
-	reader := bufio.NewReader(os.Stdin)
-	for {
-		input, err := reader.ReadString('\n')
-		if err != nil {
-			log.Error("Error reading input", "error", err)
-			return
+		go func() {
+			for {
+				prompt := <-ch
+				if inputPosX != -1 && inputPosY != -1 {
+					log.Info("Input position set", "x", inputPosX, "y", inputPosY)
+					processPrompt(prompt)
+				} else {
+					log.Warn("Input position not set")
+				}
+			}
+		}()
+
+		// wait for user input
+		reader := bufio.NewReader(os.Stdin)
+		for {
+			input, err := reader.ReadString('\n')
+			if err != nil {
+				log.Error("Error reading input", "error", err)
+				return
+			}
+			ch <- strings.TrimSpace(input)
 		}
-		ch <- strings.TrimSpace(input)
-	}
+	*/
 }
