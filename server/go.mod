@@ -1,9 +1,10 @@
 module github.com/Frank-Mayer/inno-lab
 
-go 1.21.4
+go 1.21.6
 
 require (
 	fyne.io/fyne/v2 v2.4.3
+	github.com/Frank-Mayer/fyneflow v0.1.0
 	github.com/charmbracelet/log v0.3.1
 	github.com/go-vgo/robotgo v0.110.0
 	github.com/gorilla/websocket v1.5.1

@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/Frank-Mayer/inno-lab/internal/ui"
 	"net/http"
-	"sync"
 	"time"
 
 	"github.com/Frank-Mayer/inno-lab/internal/schema"
@@ -77,7 +76,7 @@ func sendImage(w http.ResponseWriter, r *http.Request) {
 		}
 		tm := time.Unix(res.Time, 0)
 		log.Info("Received image",
-            "time", tm.String(),
+			"time", tm.String(),
 			"prompt", res.Prompt,
 			"image", res.Src,
 		)
@@ -100,13 +99,9 @@ func processPrompt(prompt string) {
 
 func main() {
 
-	//window := ui.Init()
-	wg := sync.WaitGroup{}
-	ui.ShowPic()
-	go func() {
-		wg.Wait()
-	}()
-	//window.ShowAndRun()
+	window := ui.Init()
+	window.SetFullScreen(true)
+	window.ShowAndRun()
 
 	/*
 		log.SetLevel(log.DebugLevel)
