@@ -12,18 +12,20 @@ import (
 )
 
 var (
-	gender   string
-	logo     = canvas.NewImageFromFile("C:\\Users\\yagmu\\GolandProjects\\inno-lab\\server\\internal\\ui\\240121_Veritas_logo_n-02-02.png")
-	logoGrid = container.New(layout.NewGridWrapLayout(fyne.NewSize(75, 25)), logo)
-	left     = container.New(layout.NewGridWrapLayout(fyne.NewSize(200, 100)), layout.NewSpacer())
-	right    = container.New(layout.NewGridWrapLayout(fyne.NewSize(200, 100)), layout.NewSpacer())
-	bottom   = container.New(layout.NewCenterLayout(), logoGrid, layout.NewSpacer())
+	logo   *canvas.Image
+	bottom *fyne.Container
 
-	flow     *fyneflow.Flow[string]
-	myWindow fyne.Window
+	flow *fyneflow.Flow[string]
 )
 
 func Init() fyne.Window {
+	rsc, err := fyne.LoadResourceFromURLString("https://raw.githubusercontent.com/Frank-Mayer/inno-lab/main/logo.png")
+	if err != nil {
+		panic(err)
+	}
+	logo = canvas.NewImageFromResource(rsc)
+	bottom = container.New(layout.NewCenterLayout(), container.New(layout.NewGridWrapLayout(fyne.NewSize(75, 25)), logo), layout.NewSpacer())
+
 	myApp := app.New()
 	myWindow := myApp.NewWindow("UIUI")
 
@@ -49,14 +51,12 @@ func CreateUI() fyne.CanvasObject {
 	text2.TextStyle = fyne.TextStyle{Monospace: true}
 
 	button1 := widget.NewButton("Frau", func() {
-		gender = "Woman"
-		flow.UseStateStr("gender", "Woman").Set("Woman")
-		flow.GoTo("CameraLook")
+		_ = flow.UseStateStr("gender", "Woman").Set("Woman")
+		_ = flow.GoTo("CameraLook")
 	})
 	button2 := widget.NewButton("Herr", func() {
-		gender = "Man"
-		flow.UseStateStr("gender", "Man").Set("Man")
-		flow.GoTo("CameraLook")
+		_ = flow.UseStateStr("gender", "Man").Set("Man")
+		_ = flow.GoTo("CameraLook")
 	})
 	//Non-Binary Button?
 
@@ -81,35 +81,35 @@ func CreateScenario() fyne.CanvasObject {
 	text1.TextStyle = fyne.TextStyle{Monospace: true}
 
 	button1 := widget.NewButton("Politiker:in", func() {
-		flow.GoTo("ShowPic")
+		_ = flow.GoTo("ShowPic")
 	})
 	button2 := widget.NewButton("Astronaut:in", func() {
-		flow.GoTo("ShowPic")
+		_ = flow.GoTo("ShowPic")
 	})
 	button3 := widget.NewButton("Im Urlaub", func() {
-		flow.GoTo("ShowPic")
+		_ = flow.GoTo("ShowPic")
 	})
 	button4 := widget.NewButton("Imagewechsel", func() {
-		flow.GoTo("ShowPic")
+		_ = flow.GoTo("ShowPic")
 	})
 	button5 := widget.NewButton("Pop-Star", func() {
-		flow.GoTo("ShowPic")
+		_ = flow.GoTo("ShowPic")
 	})
 	button6 := widget.NewButton("Fußballer:in", func() {
-		flow.GoTo("ShowPic")
+		_ = flow.GoTo("ShowPic")
 	})
 	button7 := widget.NewButton("Auf Abenteuer", func() {
-		flow.GoTo("ShowPic")
+		_ = flow.GoTo("ShowPic")
 	})
 	button8 := widget.NewButton("Model", func() {
-		flow.GoTo("ShowPic")
+		_ = flow.GoTo("ShowPic")
 	})
 	button9 := widget.NewButton("Im TED-Talk", func() {
-		flow.GoTo("ShowPic")
+		_ = flow.GoTo("ShowPic")
 	})
 
 	buttonBeenden := widget.NewButton("Beenden und Bilder löschen.", func() {
-		flow.GoTo("CreateUI")
+		_ = flow.GoTo("CreateUI")
 		//flow.ClearStates ?
 	})
 
