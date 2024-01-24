@@ -2,3 +2,5 @@
 thumbs.db
 *.swp
 *.tmp
+.env
+.env.*
