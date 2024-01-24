@@ -2,28 +2,20 @@ package firebase
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"image"
 	"image/jpeg"
-	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"encoding/json"
+
 	firebase "firebase.google.com/go"
+	storage "firebase.google.com/go/storage"
 	"gocv.io/x/gocv"
 	"google.golang.org/api/option"
 )
-
-type Config struct {
-	FirebaseAPIKey            string `json:"FIREBASE_API_KEY"`
-	FirebaseAuthDomain        string `json:"FIREBASE_AUTH_DOMAIN"`
-	FirebaseProjectID         string `json:"FIREBASE_PROJECT_ID"`
-	FirebaseStorageBucket     string `json:"FIREBASE_STORAGE_BUCKET"`
-	FirebaseMessagingSenderID string `json:"FIREBASE_MESSAGING_SENDER_ID"`
-	FirebaseAppID             string `json:"FIREBASE_APP_ID"`
-}
 
 type FirebaseFileAPI struct {
 	Name            string    `json:"name"`
@@ -42,21 +34,32 @@ type FirebaseFileAPI struct {
 	DownloadTokens  string    `json:"downloadTokens"`
 }
 
+var (
+	app    *firebase.App
+	client *storage.Client
+)
+
 // Funktion zum Hochladen eines Bildes nach Firebase Storage
 func uploadImageToFirebaseStorage(imageData image.Image) (string, error) {
 	ctx := context.Background()
 
 	// Erstelle eine neue Firebase-App mit den bereitgestellten Optionen
 	opt := option.WithCredentialsFile("/Users/mhammel/GolandProjects/inno-lab/server/cmd/server_firebase/serviceAccountKey.json")
-	app, err := firebase.NewApp(ctx, nil, opt)
-	if err != nil {
-		return "", fmt.Errorf("fehler beim Erstellen der Firebase-App: %v", err)
+	if app == nil {
+		var err error
+		app, err = firebase.NewApp(ctx, nil, opt)
+		if err != nil {
+			return "", errors.Join(errors.New("failed to create firebase app"), err)
+		}
 	}
 
 	// Erstelle einen Storage-Client
-	client, err := app.Storage(ctx)
-	if err != nil {
-		return "", fmt.Errorf("fehler beim Erstellen des Storage-Clients: %v", err)
+	if client == nil {
+		var err error
+		client, err = app.Storage(ctx)
+		if err != nil {
+			return "", errors.Join(errors.New("failed to create firebase storage client"), err)
+		}
 	}
 
 	// Erstelle einen eindeutigen Dateinamen, z.B., basierend auf der aktuellen Zeit
@@ -66,28 +69,24 @@ func uploadImageToFirebaseStorage(imageData image.Image) (string, error) {
 	var bucketName = "inno-lab-85f72.appspot.com"
 	bucketHandle, err := client.Bucket(bucketName)
 	if err != nil {
-		return "", fmt.Errorf("fehler beim Abrufen des Bucket-Handles: %v", err)
+		return "", errors.Join(errors.New("failed to create firebase bucket handle"), err)
 	}
 
 	// Erstelle einen Storage-Handle für das Bild
 	object2000 := bucketHandle.Object(fileName)
 	imageHandle := object2000.NewWriter(ctx)
+	defer imageHandle.Close()
 
 	// Kopiere den Bildinhalt in den Storage-Writer
 
 	if err := jpeg.Encode(imageHandle, imageData, nil); err != nil {
-		return "", fmt.Errorf("fehler beim Kopieren des Bildinhalts: %v", err)
-	}
-
-	// Schließe den Storage-Writer und committe die Änderungen
-	if err := imageHandle.Close(); err != nil {
-		return "", fmt.Errorf("fehler beim Schließen des Storage-Handles: %v", err)
+		return "", errors.Join(errors.New("failed to encode image"), err)
 	}
 
 	// Erhalte den öffentlichen URL-Link des gespeicherten Bildes
 	attrs, err := object2000.Attrs(ctx)
 	if err != nil {
-		return "", fmt.Errorf("fehler beim Abrufen der Objektattribute: %v", err)
+		return "", errors.Join(errors.New("failed to get image attributes"), err)
 	}
 
 	imageName := attrs.Name
@@ -96,7 +95,7 @@ func uploadImageToFirebaseStorage(imageData image.Image) (string, error) {
 
 	resp, err := http.Get(url)
 	if err != nil {
-		return "", fmt.Errorf("fehler beim http request: %v", err)
+		return "", errors.Join(errors.New("failed to get image url"), err)
 	}
 	defer resp.Body.Close()
 
@@ -112,57 +111,38 @@ func uploadImageToFirebaseStorage(imageData image.Image) (string, error) {
 
 }
 
-// Funktion zum Laden der Firebase-Konfiguration aus einer JSON-Datei
-func loadFirebaseConfig(configFilePath string) (Config, error) {
-	var config Config
-
-	// Lese die Konfigurationsdatei
-	data, err := os.ReadFile(configFilePath)
-	if err != nil {
-		return config, fmt.Errorf("fehler beim Lesen der Konfigurationsdatei: %v", err)
-	}
-
-	// Dekodiere JSON-Daten in die Config-Struktur
-	err = json.Unmarshal(data, &config)
-	if err != nil {
-		return config, fmt.Errorf("fehler beim Dekodieren der Konfigurationsdaten: %v", err)
-	}
-
-	return config, nil
-}
-
 func takePicture() (image.Image, error) {
-	camera, err := gocv.OpenVideoCapture(0)
+	vidCapture, err := gocv.OpenVideoCapture(0)
 	if err != nil {
-		return nil, fmt.Errorf("fehler beim erkennenn der kamera: %v", err)
+		return nil, errors.Join(errors.New("failed to open video capture"), err)
 	}
-	defer camera.Close()
+	defer vidCapture.Close()
 
-	img := gocv.NewMat()
-	defer img.Close()
+	mat := gocv.NewMat()
+	defer mat.Close()
 
-	if !camera.Read(&img) {
-		return nil, fmt.Errorf("fehler beim lesen der kamera")
+	if !vidCapture.Read(&mat) {
+		return nil, errors.New("failed to read frame from video capture")
 	}
 
-	imageForImage, err := img.ToImage()
+	imageForImage, err := mat.ToImage()
 	if err != nil {
-		return nil, fmt.Errorf("fehler beim erstellen des byte arrays: %v", err)
+		return nil, errors.Join(errors.New("failed to convert mat to image"), err)
 	}
 
 	return imageForImage, nil
 }
 
-func main() {
-
-	thepicture, err := takePicture()
+func GetWebcamUrl() (string, error) {
+	img, err := takePicture()
 	if err != nil {
-		log.Fatal(err)
+		return "", errors.Join(errors.New("failed to take picture"), err)
 	}
 
-	url, err := uploadImageToFirebaseStorage(thepicture)
+	url, err := uploadImageToFirebaseStorage(img)
 	if err != nil {
-		log.Fatal(err)
+		return "", errors.Join(errors.New("failed to upload image to firebase storage"), err)
 	}
-	fmt.Printf("URL des gespeicherten Bildes: %s\n", url)
+
+	return url, nil
 }
