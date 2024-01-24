@@ -1,4 +1,4 @@
-package main
+package firebase
 
 import (
 	"context"
@@ -131,7 +131,7 @@ func loadFirebaseConfig(configFilePath string) (Config, error) {
 	return config, nil
 }
 
-func getAPicture() (image.Image, error) {
+func takePicture() (image.Image, error) {
 	camera, err := gocv.OpenVideoCapture(0)
 	if err != nil {
 		return nil, fmt.Errorf("fehler beim erkennenn der kamera: %v", err)
@@ -155,7 +155,7 @@ func getAPicture() (image.Image, error) {
 
 func main() {
 
-	thepicture, err := getAPicture()
+	thepicture, err := takePicture()
 	if err != nil {
 		log.Fatal(err)
 	}
