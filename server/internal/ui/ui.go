@@ -9,7 +9,6 @@ import (
 	"fyne.io/fyne/v2/widget"
 	"github.com/Frank-Mayer/fyneflow"
 	"image/color"
-	"time"
 )
 
 var (
@@ -32,7 +31,6 @@ func Init() fyne.Window {
 	flow.Set("CreateUI", CreateUI)
 	flow.Set("CreateScenario", CreateScenario)
 	flow.Set("CameraLook", CameraLook)
-	flow.Set("Countdown", Countdown)
 	flow.Set("ShowPic", ShowPic)
 
 	return myWindow
@@ -62,14 +60,18 @@ func CreateUI() fyne.CanvasObject {
 	})
 	//Non-Binary Button?
 
-	grid := container.New(layout.NewGridLayout(2), button1, button2)
-	grid1 := container.New(layout.NewGridLayout(1), text1, text2, layout.NewSpacer())
+	top := container.New(layout.NewGridLayout(1), layout.NewSpacer(), container.New(layout.NewGridLayout(1), text1, text2, layout.NewSpacer()))
+	middle := container.New(layout.NewGridLayout(1),
+		container.New(layout.NewGridLayout(2),
+			button1, button2), layout.NewSpacer())
 
-	top := container.New(layout.NewGridLayout(1), layout.NewSpacer(), grid1)
-	middle := container.New(layout.NewGridLayout(1), grid, layout.NewSpacer())
-	content := container.NewBorder(top, bottom, left, right, middle)
+	stack := container.NewStack(
 
-	return content
+		container.NewBorder(top,
+			bottom, nil, nil,
+			middle))
+
+	return stack
 }
 
 func CreateScenario() fyne.CanvasObject {
@@ -111,16 +113,17 @@ func CreateScenario() fyne.CanvasObject {
 		//flow.ClearStates ?
 	})
 
-	grid := container.New(layout.NewGridLayout(3), button1, button2, button3, button4, button5, button6, button7, button8, button9)
+	top := container.New(layout.NewGridLayout(1), layout.NewSpacer(), text1)
 
-	toptop := container.New(layout.NewGridWrapLayout(fyne.NewSize(250, 50)), buttonBeenden)
+	middle := container.New(layout.NewGridLayout(1), layout.NewSpacer(),
+		container.New(layout.NewGridLayout(3), button1, button2, button3, button4, button5, button6, button7, button8, button9), layout.NewSpacer())
 
-	top := container.New(layout.NewGridLayout(1), toptop, layout.NewSpacer(), text1)
-	middle := container.New(layout.NewGridLayout(1), layout.NewSpacer(), grid, layout.NewSpacer())
+	stack := container.NewStack(
+		container.NewHBox(container.NewVBox(buttonBeenden)),
+		container.NewBorder(top, bottom, nil, nil,
+			middle))
 
-	content := container.NewBorder(top, bottom, left, right, middle)
-
-	return content
+	return stack
 }
 
 func CameraLook() fyne.CanvasObject {
@@ -148,50 +151,15 @@ func CameraLook() fyne.CanvasObject {
 		flow.GoTo("CreateScenario")
 	})
 
-	grid := container.New(layout.NewGridLayout(1), text1, text2, layout.NewSpacer(), text3, button1)
-	gridC := container.New(layout.NewCenterLayout(), grid)
+	stack := container.NewStack(
+		container.NewHBox(container.NewVBox(buttonBeenden)),
+		container.NewBorder(nil, bottom, nil, nil,
+			container.NewCenter(
+				container.NewVBox(
+					container.New(layout.NewGridLayout(1), text1, text2, layout.NewSpacer(), text3, button1),
+				))))
 
-	toptop := container.New(layout.NewGridWrapLayout(fyne.NewSize(250, 50)), buttonBeenden)
-
-	top := container.New(layout.NewGridLayout(1), toptop, layout.NewSpacer())
-	middle := container.New(layout.NewGridLayout(1), gridC)
-	content := container.NewBorder(top, bottom, left, right, middle)
-
-	return content
-}
-
-func Countdown() fyne.CanvasObject {
-	buttonBeenden := widget.NewButton("Beenden und Bilder löschen.", func() {
-		flow.GoTo("CreateUI")
-		//flow.ClearStates ?
-	})
-
-	circle := canvas.NewCircle(color.White)
-	toptop := container.New(layout.NewGridWrapLayout(fyne.NewSize(250, 50)), buttonBeenden)
-
-	top := container.New(layout.NewGridLayout(1), toptop, layout.NewSpacer())
-	middle := container.New(layout.NewGridLayout(1), layout.NewSpacer(), circle, layout.NewSpacer())
-
-	content := container.NewBorder(top, bottom, left, right, middle)
-	return content
-}
-
-func Counto() {
-	myApp := app.New()
-	myWindow := myApp.NewWindow("ProgressBar Widget")
-
-	progress := widget.NewProgressBar()
-	infinite := widget.NewProgressBarInfinite()
-
-	go func() {
-		for i := 0.0; i <= 1.0; i += 0.1 {
-			time.Sleep(time.Millisecond * 250)
-			progress.SetValue(i)
-		}
-	}()
-
-	myWindow.SetContent(container.NewVBox(progress, infinite))
-	myWindow.ShowAndRun()
+	return stack
 }
 
 func ShowPic() fyne.CanvasObject {
@@ -201,16 +169,22 @@ func ShowPic() fyne.CanvasObject {
 
 	})
 
+	text1 := canvas.NewText("Bitte warten...", color.White)
+	text1.TextSize = 50
+	text1.Alignment = fyne.TextAlignCenter
+	text1.TextStyle = fyne.TextStyle{Monospace: true}
+
 	urlString, err := fyne.LoadResourceFromURLString("https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Cat_August_2010-4.jpg/2560px-Cat_August_2010-4.jpg")
 	if err != nil {
 		panic(err)
 	}
 
 	pic := canvas.NewImageFromResource(urlString)
+
 	stack := container.NewStack(
 		container.NewHBox(container.NewVBox(buttonBeenden)),
 		container.NewBorder(nil, bottom, nil, nil,
-			container.NewCenter(
+			container.NewCenter(text1,
 				container.NewVBox(container.NewGridWrap(fyne.NewSize(620, 620), pic),
 					widget.NewButton("Weitere Szenarien auswählen.", func() {
 						flow.GoTo("CreateScenario")
