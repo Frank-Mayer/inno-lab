@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"image"
 	"image/jpeg"
+	"io"
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"time"
 
 	"encoding/json"
@@ -15,15 +17,6 @@ import (
 	"gocv.io/x/gocv"
 	"google.golang.org/api/option"
 )
-
-type Config struct {
-	FirebaseAPIKey            string `json:"FIREBASE_API_KEY"`
-	FirebaseAuthDomain        string `json:"FIREBASE_AUTH_DOMAIN"`
-	FirebaseProjectID         string `json:"FIREBASE_PROJECT_ID"`
-	FirebaseStorageBucket     string `json:"FIREBASE_STORAGE_BUCKET"`
-	FirebaseMessagingSenderID string `json:"FIREBASE_MESSAGING_SENDER_ID"`
-	FirebaseAppID             string `json:"FIREBASE_APP_ID"`
-}
 
 type FirebaseFileAPI struct {
 	Name            string    `json:"name"`
@@ -98,7 +91,12 @@ func uploadImageToFirebaseStorage(imageData image.Image) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("fehler beim http request: %v", err)
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+
+		}
+	}(resp.Body)
 
 	var object FirebaseFileAPI
 	err = json.NewDecoder(resp.Body).Decode(&object)
@@ -113,33 +111,26 @@ func uploadImageToFirebaseStorage(imageData image.Image) (string, error) {
 }
 
 // Funktion zum Laden der Firebase-Konfiguration aus einer JSON-Datei
-func loadFirebaseConfig(configFilePath string) (Config, error) {
-	var config Config
-
-	// Lese die Konfigurationsdatei
-	data, err := os.ReadFile(configFilePath)
-	if err != nil {
-		return config, fmt.Errorf("fehler beim Lesen der Konfigurationsdatei: %v", err)
-	}
-
-	// Dekodiere JSON-Daten in die Config-Struktur
-	err = json.Unmarshal(data, &config)
-	if err != nil {
-		return config, fmt.Errorf("fehler beim Dekodieren der Konfigurationsdaten: %v", err)
-	}
-
-	return config, nil
-}
 
 func getAPicture() (image.Image, error) {
 	camera, err := gocv.OpenVideoCapture(0)
 	if err != nil {
 		return nil, fmt.Errorf("fehler beim erkennenn der kamera: %v", err)
 	}
-	defer camera.Close()
+	defer func(camera *gocv.VideoCapture) {
+		err := camera.Close()
+		if err != nil {
+
+		}
+	}(camera)
 
 	img := gocv.NewMat()
-	defer img.Close()
+	defer func(img *gocv.Mat) {
+		err := img.Close()
+		if err != nil {
+
+		}
+	}(&img)
 
 	if !camera.Read(&img) {
 		return nil, fmt.Errorf("fehler beim lesen der kamera")
@@ -151,6 +142,32 @@ func getAPicture() (image.Image, error) {
 	}
 
 	return imageForImage, nil
+}
+
+func saveImageAsJPEG(img image.Image, directory string) (string, error) {
+	// Erstelle einen eindeutigen Dateinamen, z.B., basierend auf der aktuellen Zeit
+	fileName := fmt.Sprintf("%d.jpg", time.Now().UnixNano())
+	filePath := filepath.Join(directory, fileName)
+
+	// Öffne die Datei zum Schreiben
+	file, err := os.Create(filePath)
+	if err != nil {
+		return "", fmt.Errorf("fehler beim Öffnen der Datei zum Schreiben: %v", err)
+	}
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+
+		}
+	}(file)
+
+	// Speichere das Bild als JPEG
+	err = jpeg.Encode(file, img, nil)
+	if err != nil {
+		return "", fmt.Errorf("fehler beim Speichern des Bildes als JPEG: %v", err)
+	}
+
+	return filePath, nil
 }
 
 func main() {
@@ -165,4 +182,11 @@ func main() {
 		log.Fatal(err)
 	}
 	fmt.Printf("URL des gespeicherten Bildes: %s\n", url)
+
+	// Speichere das Bild als JPEG in gewünschtem Verzeichnis
+	// err != nil {
+	//	log.Fatal(err)
+	//}
+	//fmt.Printf("Bild erfolgreich gespeichert: %s\n", savedFilePath)
+
 }
