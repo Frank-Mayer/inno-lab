@@ -102,8 +102,8 @@ func processPrompt(prompt string) {
 		log.Debug("sleep")
 		time.Sleep(1 * time.Second)
 		log.Debug("type")
-		robotgo.TypeStr("/imagine ")
-		robotgo.TypeStr(prompt)
+		robotgo.TypeStr("/imagine ", 0, 50, 50)
+		robotgo.TypeStr(prompt, 0, 50, 50)
 		err := robotgo.KeyTap("enter")
 		if err != nil {
 			log.Error("Error sending enter", "error", err)
