@@ -12,7 +12,6 @@ import (
 	"encoding/json"
 
 	firebase "firebase.google.com/go"
-	storage "firebase.google.com/go/storage"
 	"gocv.io/x/gocv"
 	"google.golang.org/api/option"
 )
@@ -34,11 +33,6 @@ type FirebaseFileAPI struct {
 	DownloadTokens  string    `json:"downloadTokens"`
 }
 
-var (
-	app    *firebase.App
-	client *storage.Client
-)
-
 // Funktion zum Hochladen eines Bildes nach Firebase Storage
 func uploadImageToFirebaseStorage(imageData image.Image) (string, error) {
 	ctx := context.Background()
@@ -46,21 +40,15 @@ func uploadImageToFirebaseStorage(imageData image.Image) (string, error) {
 	// Erstelle eine neue Firebase-App mit den bereitgestellten Optionen
 	// opt := option.WithCredentialsFile("/Users/mhammel/GolandProjects/inno-lab/server/cmd/server_firebase/serviceAccountKey.json")
 	opt := option.WithCredentialsFile("/Users/frank/Git/inno-lab/server/serviceAccountKey.json")
-	if app == nil {
-		var err error
-		app, err = firebase.NewApp(ctx, nil, opt)
-		if err != nil {
-			return "", errors.Join(errors.New("failed to create firebase app"), err)
-		}
+	app, err := firebase.NewApp(ctx, nil, opt)
+	if err != nil {
+		return "", errors.Join(errors.New("failed to create firebase app"), err)
 	}
 
 	// Erstelle einen Storage-Client
-	if client == nil {
-		var err error
-		client, err = app.Storage(ctx)
-		if err != nil {
-			return "", errors.Join(errors.New("failed to create firebase storage client"), err)
-		}
+	client, err := app.Storage(ctx)
+	if err != nil {
+		return "", errors.Join(errors.New("failed to create firebase storage client"), err)
 	}
 
 	// Erstelle einen eindeutigen Dateinamen, z.B., basierend auf der aktuellen Zeit
