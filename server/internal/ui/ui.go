@@ -2,6 +2,7 @@ package ui
 
 import (
 	"image/color"
+	"strings"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -44,19 +45,29 @@ func Init() fyne.Window {
 
 func UiUiError() fyne.CanvasObject {
 	err, _ := flow.UseStateStr("error", "").Get()
-	return container.NewVBox(
-		canvas.NewText("Da lief was schief :(", color.RGBA{R: 255}),
-		canvas.NewText(err, color.RGBA{R: 255}),
+	log.Debug("Displaying error ui", "error", err)
+	vbox := container.NewVBox(
+		canvas.NewText("Da lief was schief :(", color.RGBA{R: 255, G: 0, B: 0, A: 255}),
 	)
+	if err != "" {
+		// split error message into multiple lines
+		for _, line := range strings.Split(err, "\n") {
+			vbox.Add(canvas.NewText(line, color.White))
+		}
+	}
+	return container.NewBorder(nil, bottom, nil, nil, vbox)
 }
 
 func renderError(err error) fyne.CanvasObject {
-	flow.UseStateStr("error", "").Set(err.Error())
+	if err := flow.UseStateStr("error", "").Set(err.Error()); err != nil {
+		log.Error("Failed to set error", "error", err)
+	}
 	return UiUiError()
 }
 
 func displayError(err error) {
 	if err == nil {
+		log.Error("called displayError with nil error")
 		return
 	}
 	log.Error("Error", "error", err)
@@ -67,7 +78,6 @@ func displayError(err error) {
 }
 
 func CreateUI() fyne.CanvasObject {
-	//TODO withFrank: Prompts an extension übergeben
 	text1 := canvas.NewText("Bevor es losgeht...", color.White)
 	text1.TextSize = 30
 	text1.Alignment = fyne.TextAlignCenter
@@ -255,7 +265,7 @@ func CameraLook() fyne.CanvasObject {
 
 func ShowPic() fyne.CanvasObject {
 	buttonBeenden := widget.NewButton("Beenden und Bilder löschen.", func() {
-		flow.GoTo("CreateUI")
+		_ = flow.GoTo("CreateUI")
 		//flow.ClearStates ?
 
 	})
@@ -265,13 +275,16 @@ func ShowPic() fyne.CanvasObject {
 	text1.Alignment = fyne.TextAlignCenter
 	text1.TextStyle = fyne.TextStyle{Monospace: true}
 
-	//TODO withFrank: Get and show Picture
-	urlString, err := fyne.LoadResourceFromURLString("https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Cat_August_2010-4.jpg/2560px-Cat_August_2010-4.jpg")
+	promptResult, err := flow.UseStateStr("prompt", "").Get()
+	if err != nil {
+		return renderError(err)
+	}
+	rsc, err := fyne.LoadResourceFromURLString(promptResult)
 	if err != nil {
 		return renderError(err)
 	}
 
-	pic := canvas.NewImageFromResource(urlString)
+	pic := canvas.NewImageFromResource(rsc)
 
 	stack := container.NewStack(
 		container.NewHBox(container.NewVBox(buttonBeenden)),
@@ -279,7 +292,7 @@ func ShowPic() fyne.CanvasObject {
 			container.NewCenter(text1,
 				container.NewVBox(container.NewGridWrap(fyne.NewSize(620, 620), pic),
 					widget.NewButton("Weitere Szenarien auswählen.", func() {
-						flow.GoTo("CreateScenario")
+						_ = flow.GoTo("CreateScenario")
 					})))))
 
 	return stack
