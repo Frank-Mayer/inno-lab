@@ -1,6 +1,9 @@
 package ui
 
 import (
+	"image/color"
+	"strings"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
@@ -8,14 +11,15 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 	"github.com/Frank-Mayer/fyneflow"
-	"image/color"
+	"github.com/Frank-Mayer/inno-lab/internal/firebase"
+	"github.com/Frank-Mayer/inno-lab/internal/server"
+	"github.com/charmbracelet/log"
 )
 
 var (
 	logo   *canvas.Image
 	bottom *fyne.Container
-
-	flow *fyneflow.Flow[string]
+	flow   *fyneflow.Flow[string]
 )
 
 func Init() fyne.Window {
@@ -34,12 +38,47 @@ func Init() fyne.Window {
 	flow.Set("CreateScenario", CreateScenario)
 	flow.Set("CameraLook", CameraLook)
 	flow.Set("ShowPic", ShowPic)
+	flow.Set("Loading", Loading)
+	flow.Set("error", UiUiError)
 
 	return myWindow
 }
 
-func CreateUI() fyne.CanvasObject {
+func UiUiError() fyne.CanvasObject {
+	err, _ := flow.UseStateStr("error", "").Get()
+	log.Debug("Displaying error ui", "error", err)
+	vbox := container.NewVBox(
+		canvas.NewText("Da lief was schief :(", color.RGBA{R: 255, G: 0, B: 0, A: 255}),
+	)
+	if err != "" {
+		// split error message into multiple lines
+		for _, line := range strings.Split(err, "\n") {
+			vbox.Add(canvas.NewText(line, color.White))
+		}
+	}
+	return container.NewBorder(nil, bottom, nil, nil, vbox)
+}
 
+func renderError(err error) fyne.CanvasObject {
+	if err := flow.UseStateStr("error", "").Set(err.Error()); err != nil {
+		log.Error("Failed to set error", "error", err)
+	}
+	return UiUiError()
+}
+
+func displayError(err error) {
+	if err == nil {
+		log.Error("called displayError with nil error")
+		return
+	}
+	log.Error("Error", "error", err)
+	if err := flow.UseStateStr("error", "").Set(err.Error()); err != nil {
+		log.Error("Failed to set error", "error", err)
+	}
+	_ = flow.GoTo("error")
+}
+
+func CreateUI() fyne.CanvasObject {
 	text1 := canvas.NewText("Bevor es losgeht...", color.White)
 	text1.TextSize = 30
 	text1.Alignment = fyne.TextAlignCenter
@@ -80,37 +119,110 @@ func CreateScenario() fyne.CanvasObject {
 	text1.Alignment = fyne.TextAlignCenter
 	text1.TextStyle = fyne.TextStyle{Monospace: true}
 
+	gender, err := flow.UseStateStr("gender", "").Get()
+	if err != nil {
+		return renderError(err)
+	}
+	promptResult := flow.UseStateStr("prompt", "")
+	webcamUrl, err := flow.UseStateStr("webcamUrl", "").Get()
+	if err != nil {
+		return renderError(err)
+	}
+
 	button1 := widget.NewButton("Politiker:in", func() {
-		_ = flow.GoTo("ShowPic")
+		_ = flow.GoTo("Loading")
+		go func() {
+			promptString := webcamUrl + " https://s.mj.run/hWqyh5IpNio photographic picture of a " + gender + " as a politican in a press conference --iw 2"
+			if err := promptResult.Set(server.SentPrompt(promptString)); err != nil {
+				log.Error("Failed to set prompt result", "error", err)
+			}
+			_ = flow.GoTo("ShowPic")
+		}()
 	})
 	button2 := widget.NewButton("Astronaut:in", func() {
-		_ = flow.GoTo("ShowPic")
+		_ = flow.GoTo("Loading")
+		go func() {
+			promptString := webcamUrl + " ::4 https://s.mj.run/QY2Z4ddoxck ::1 ultrarealistic picture of a " + gender + " as an astronaut in a space suit, stars and planets in the background "
+			if err := promptResult.Set(server.SentPrompt(promptString)); err != nil {
+				log.Error("Failed to set prompt result", "error", err)
+			}
+			_ = flow.GoTo("ShowPic")
+		}()
 	})
 	button3 := widget.NewButton("Im Urlaub", func() {
-		_ = flow.GoTo("ShowPic")
+		_ = flow.GoTo("Loading")
+		go func() {
+			promptString := webcamUrl + "::4 https://s.mj.run/wb3_lBMHQZw ::1 ultrarealistic picture of a " + gender + " at a holiday resort. warm tones --v 5.2 "
+			if err := promptResult.Set(server.SentPrompt(promptString)); err != nil {
+				log.Error("Failed to set prompt result", "error", err)
+			}
+			_ = flow.GoTo("ShowPic")
+		}()
 	})
 	button4 := widget.NewButton("Imagewechsel", func() {
-		_ = flow.GoTo("ShowPic")
+		_ = flow.GoTo("Loading")
+		go func() {
+			promptString := webcamUrl + " ultrarealistic picture of a " + gender + " heavily tattood with piercings in their face, in the background you can see a tattoo parlor --iw 2 "
+			if err := promptResult.Set(server.SentPrompt(promptString)); err != nil {
+				log.Error("Failed to set prompt result", "error", err)
+			}
+			_ = flow.GoTo("ShowPic")
+		}()
 	})
 	button5 := widget.NewButton("Pop-Star", func() {
-		_ = flow.GoTo("ShowPic")
+		_ = flow.GoTo("Loading")
+		go func() {
+			promptString := webcamUrl + " https://s.mj.run/DxMAyfGMFTY ultrarealistic picture of a " + gender + " as a popstar on the concert stage, microphone in their hand --iw 2 "
+			if err := promptResult.Set(server.SentPrompt(promptString)); err != nil {
+				log.Error("Failed to set prompt result", "error", err)
+			}
+			_ = flow.GoTo("ShowPic")
+		}()
 	})
 	button6 := widget.NewButton("Fußballer:in", func() {
-		_ = flow.GoTo("ShowPic")
+		_ = flow.GoTo("Loading")
+		go func() {
+			promptString := webcamUrl + " ::4 https://s.mj.run/J0aQ9gVwN6k ::1 photographic of a " + gender + " as a football player in a press conference, logos in the background"
+			if err := promptResult.Set(server.SentPrompt(promptString)); err != nil {
+				log.Error("Failed to set prompt result", "error", err)
+			}
+			_ = flow.GoTo("ShowPic")
+		}()
 	})
 	button7 := widget.NewButton("Auf Abenteuer", func() {
-		_ = flow.GoTo("ShowPic")
+		_ = flow.GoTo("Loading")
+		go func() {
+			promptString := webcamUrl + " ::5 https://s.mj.run/_zpWilkBFyQ ::1 ultrarealistic picture of a " + gender + " in a jungle sitting in the trees, beige clothes and a hat "
+			if err := promptResult.Set(server.SentPrompt(promptString)); err != nil {
+				log.Error("Failed to set prompt result", "error", err)
+			}
+			_ = flow.GoTo("ShowPic")
+		}()
 	})
 	button8 := widget.NewButton("Model", func() {
-		_ = flow.GoTo("ShowPic")
+		_ = flow.GoTo("Loading")
+		go func() {
+			promptString := webcamUrl + " ::4 https://s.mj.run/BzHMDLF1RhE ::1 photographic picture of a " + gender + " as a model wearing haute couture on the catwalk "
+			if err := promptResult.Set(server.SentPrompt(promptString)); err != nil {
+				log.Error("Failed to set prompt result", "error", err)
+			}
+			_ = flow.GoTo("ShowPic")
+		}()
 	})
 	button9 := widget.NewButton("Im TED-Talk", func() {
-		_ = flow.GoTo("ShowPic")
+		_ = flow.GoTo("Loading")
+		go func() {
+			promptString := webcamUrl + " ::4 https://s.mj.run/qcnxNbyX9hE ::1 Create a photograph of a " + gender + " holding a motivational speech at a TEDtalk. They are standing on a red, round carpet. There are people sitting in the crowd. \"TED\" --v 6.0 "
+			if err := promptResult.Set(server.SentPrompt(promptString)); err != nil {
+				log.Error("Failed to set prompt result", "error", err)
+			}
+			_ = flow.GoTo("ShowPic")
+		}()
 	})
 
 	buttonBeenden := widget.NewButton("Beenden und Bilder löschen.", func() {
 		_ = flow.GoTo("CreateUI")
-		//flow.ClearStates ?
+		_ = promptResult.Set("")
 	})
 
 	top := container.New(layout.NewGridLayout(1), layout.NewSpacer(), text1)
@@ -126,11 +238,27 @@ func CreateScenario() fyne.CanvasObject {
 	return stack
 }
 
+func Loading() fyne.CanvasObject {
+	text1 := canvas.NewText("Bitte warten...", color.White)
+	text1.TextSize = 50
+	text1.Alignment = fyne.TextAlignCenter
+	text1.TextStyle = fyne.TextStyle{Monospace: true}
+
+	return container.NewBorder(nil, bottom, nil, nil, container.NewCenter(text1))
+}
+
 func CameraLook() fyne.CanvasObject {
 	buttonBeenden := widget.NewButton("Beenden und Bilder löschen.", func() {
-		flow.GoTo("CreateUI")
+		_ = flow.GoTo("CreateUI")
 		//flow.ClearStates ?
 	})
+
+	rsc, err := fyne.LoadResourceFromURLString("https://raw.githubusercontent.com/Frank-Mayer/inno-lab/main/beispielPose.png")
+	if err != nil {
+		return renderError(err)
+	}
+
+	beispielPic := canvas.NewImageFromResource(rsc)
 
 	text1 := canvas.NewText("Um Ihr Szenario zu erstellen wird ein Bild von Ihnen aufgenommen.", color.White)
 	text1.TextSize = 20
@@ -148,14 +276,24 @@ func CameraLook() fyne.CanvasObject {
 	text3.TextStyle = fyne.TextStyle{Monospace: true}
 
 	button1 := widget.NewButton("Bereit?", func() {
-		flow.GoTo("CreateScenario")
+		webcamUrlBind := flow.UseStateStr("webcamUrl", "")
+		if webcamUrl, err := firebase.GetWebcamUrl(); err == nil {
+			if err := webcamUrlBind.Set(webcamUrl); err != nil {
+				displayError(err)
+				return
+			}
+		} else {
+			displayError(err)
+			return
+		}
+		_ = flow.GoTo("CreateScenario")
 	})
 
 	stack := container.NewStack(
 		container.NewHBox(container.NewVBox(buttonBeenden)),
 		container.NewBorder(nil, bottom, nil, nil,
 			container.NewCenter(
-				container.NewVBox(
+				container.NewVBox(container.NewCenter(container.NewGridWrap(fyne.NewSize(300, 300), beispielPic)),
 					container.New(layout.NewGridLayout(1), text1, text2, layout.NewSpacer(), text3, button1),
 				))))
 
@@ -164,7 +302,7 @@ func CameraLook() fyne.CanvasObject {
 
 func ShowPic() fyne.CanvasObject {
 	buttonBeenden := widget.NewButton("Beenden und Bilder löschen.", func() {
-		flow.GoTo("CreateUI")
+		_ = flow.GoTo("CreateUI")
 		//flow.ClearStates ?
 
 	})
@@ -174,12 +312,16 @@ func ShowPic() fyne.CanvasObject {
 	text1.Alignment = fyne.TextAlignCenter
 	text1.TextStyle = fyne.TextStyle{Monospace: true}
 
-	urlString, err := fyne.LoadResourceFromURLString("https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Cat_August_2010-4.jpg/2560px-Cat_August_2010-4.jpg")
+	promptResult, err := flow.UseStateStr("prompt", "").Get()
 	if err != nil {
-		panic(err)
+		return renderError(err)
+	}
+	rsc, err := fyne.LoadResourceFromURLString(promptResult)
+	if err != nil {
+		return renderError(err)
 	}
 
-	pic := canvas.NewImageFromResource(urlString)
+	pic := canvas.NewImageFromResource(rsc)
 
 	stack := container.NewStack(
 		container.NewHBox(container.NewVBox(buttonBeenden)),
@@ -187,7 +329,7 @@ func ShowPic() fyne.CanvasObject {
 			container.NewCenter(text1,
 				container.NewVBox(container.NewGridWrap(fyne.NewSize(620, 620), pic),
 					widget.NewButton("Weitere Szenarien auswählen.", func() {
-						flow.GoTo("CreateScenario")
+						_ = flow.GoTo("CreateScenario")
 					})))))
 
 	return stack
