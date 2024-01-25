@@ -13,11 +13,9 @@ import (
 )
 
 var (
-	logo         *canvas.Image
-	bottom       *fyne.Container
-	flow         *fyneflow.Flow[string]
-	gender       string
-	promptString string
+	logo   *canvas.Image
+	bottom *fyne.Container
+	flow   *fyneflow.Flow[string]
 )
 
 func Init() fyne.Window {
@@ -82,48 +80,54 @@ func CreateScenario() fyne.CanvasObject {
 	text1.Alignment = fyne.TextAlignCenter
 	text1.TextStyle = fyne.TextStyle{Monospace: true}
 
+	gender, _ := flow.UseStateStr("gender", "").Get()
+	webcamUrl, err := firebase.GetWebcamUrl()
+	if err != nil {
+		return canvas.NewText("Da lief was schief :( \n"+err.Error(), color.RGBA{R: 255})
+	}
+
 	button1 := widget.NewButton("Politiker:in", func() {
-		promptString = "https://s.mj.run/hWqyh5IpNio photographic picture of a " + gender + " as a politican in a press conference --iw 2"
+		promptString := webcamUrl + " https://s.mj.run/hWqyh5IpNio photographic picture of a " + gender + " as a politican in a press conference --iw 2"
 		_ = flow.GoTo("ShowPic")
 		_ = flow.UseStateStr("prompt", promptString).Set(promptString)
 	})
 	button2 := widget.NewButton("Astronaut:in", func() {
-		promptString = " ::4 https://s.mj.run/QY2Z4ddoxck ::1 ultrarealistic picture of a (" + gender + ") as an astronaut in a space suit, stars and planets in the background "
+		promptString := webcamUrl + " ::4 https://s.mj.run/QY2Z4ddoxck ::1 ultrarealistic picture of a " + gender + " as an astronaut in a space suit, stars and planets in the background "
 		_ = flow.GoTo("ShowPic")
 		_ = flow.UseStateStr("prompt", promptString).Set(promptString)
 	})
 	button3 := widget.NewButton("Im Urlaub", func() {
-		promptString = "::4 https://s.mj.run/wb3_lBMHQZw ::1 ultrarealistic picture of a " + gender + " at a holiday resort. warm tones --v 5.2 "
+		promptString := webcamUrl + "::4 https://s.mj.run/wb3_lBMHQZw ::1 ultrarealistic picture of a " + gender + " at a holiday resort. warm tones --v 5.2 "
 		_ = flow.GoTo("ShowPic")
 		_ = flow.UseStateStr("prompt", promptString).Set(promptString)
 	})
 	button4 := widget.NewButton("Imagewechsel", func() {
-		promptString = " ultrarealistic picture of a " + gender + " heavily tattood with piercings in their face, in the background you can see a tattoo parlor --iw 2 "
+		promptString := webcamUrl + " ultrarealistic picture of a " + gender + " heavily tattood with piercings in their face, in the background you can see a tattoo parlor --iw 2 "
 		_ = flow.GoTo("ShowPic")
 		_ = flow.UseStateStr("prompt", promptString).Set(promptString)
 	})
 	button5 := widget.NewButton("Pop-Star", func() {
-		promptString = " https://s.mj.run/DxMAyfGMFTY ultrarealistic picture of a " + gender + " as a popstar on the concert stage, microphone in their hand --iw 2 "
+		promptString := webcamUrl + " https://s.mj.run/DxMAyfGMFTY ultrarealistic picture of a " + gender + " as a popstar on the concert stage, microphone in their hand --iw 2 "
 		_ = flow.GoTo("ShowPic")
 		_ = flow.UseStateStr("prompt", promptString).Set(promptString)
 	})
 	button6 := widget.NewButton("Fußballer:in", func() {
-		promptString = " ::4 https://s.mj.run/J0aQ9gVwN6k ::1 photographic of a " + gender + "as a football player in a press conference, logos in the background"
+		promptString := webcamUrl + " ::4 https://s.mj.run/J0aQ9gVwN6k ::1 photographic of a " + gender + "as a football player in a press conference, logos in the background"
 		_ = flow.GoTo("ShowPic")
 		_ = flow.UseStateStr("prompt", promptString).Set(promptString)
 	})
 	button7 := widget.NewButton("Auf Abenteuer", func() {
-		promptString = " ::5 https://s.mj.run/_zpWilkBFyQ ::1 ultrarealistic picture of a " + gender + " in a jungle sitting in the trees, beige clothes and a hat "
+		promptString := webcamUrl + " ::5 https://s.mj.run/_zpWilkBFyQ ::1 ultrarealistic picture of a " + gender + " in a jungle sitting in the trees, beige clothes and a hat "
 		_ = flow.GoTo("ShowPic")
 		_ = flow.UseStateStr("prompt", promptString).Set(promptString)
 	})
 	button8 := widget.NewButton("Model", func() {
-		promptString = " ::4 https://s.mj.run/BzHMDLF1RhE ::1 photographic picture of a " + gender + " as a model wearing haute couture on the catwalk "
+		promptString := webcamUrl + " ::4 https://s.mj.run/BzHMDLF1RhE ::1 photographic picture of a " + gender + " as a model wearing haute couture on the catwalk "
 		_ = flow.GoTo("ShowPic")
 		_ = flow.UseStateStr("prompt", promptString).Set(promptString)
 	})
 	button9 := widget.NewButton("Im TED-Talk", func() {
-		promptString = " ::4 https://s.mj.run/qcnxNbyX9hE ::1 Create a photograph of a " + gender + " holding a motivational speech at a TEDtalk. They are standing on a red, round carpet. There are people sitting in the crowd. 'TED' --v 6.0 "
+		promptString := webcamUrl + " ::4 https://s.mj.run/qcnxNbyX9hE ::1 Create a photograph of a " + gender + " holding a motivational speech at a TEDtalk. They are standing on a red, round carpet. There are people sitting in the crowd. 'TED' --v 6.0 "
 		_ = flow.GoTo("ShowPic")
 		_ = flow.UseStateStr("prompt", promptString).Set(promptString)
 	})
@@ -177,7 +181,6 @@ func CameraLook() fyne.CanvasObject {
 	button1 := widget.NewButton("Bereit?", func() {
 		flow.GoTo("CreateScenario")
 		firebase.GetWebcamUrl()
-		//TODO withFrank: Foto aufnehmen und auf firebase spreichern
 	})
 
 	stack := container.NewStack(
