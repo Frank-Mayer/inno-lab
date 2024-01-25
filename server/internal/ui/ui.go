@@ -164,7 +164,7 @@ func CreateScenario() fyne.CanvasObject {
 		_ = flow.GoTo("ShowPic")
 	})
 	button6 := widget.NewButton("Fußballer:in", func() {
-		promptString := webcamUrl + " ::4 https://s.mj.run/J0aQ9gVwN6k ::1 photographic of a " + gender + "as a football player in a press conference, logos in the background"
+		promptString := webcamUrl + " ::4 https://s.mj.run/J0aQ9gVwN6k ::1 photographic of a " + gender + " as a football player in a press conference, logos in the background"
 		if err := promptResult.Set(server.SentPrompt(promptString)); err != nil {
 			log.Error("Failed to set prompt result", "error", err)
 		}
