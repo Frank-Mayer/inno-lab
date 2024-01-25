@@ -44,7 +44,8 @@ func uploadImageToFirebaseStorage(imageData image.Image) (string, error) {
 	ctx := context.Background()
 
 	// Erstelle eine neue Firebase-App mit den bereitgestellten Optionen
-	opt := option.WithCredentialsFile("/Users/mhammel/GolandProjects/inno-lab/server/cmd/server_firebase/serviceAccountKey.json")
+	// opt := option.WithCredentialsFile("/Users/mhammel/GolandProjects/inno-lab/server/cmd/server_firebase/serviceAccountKey.json")
+	opt := option.WithCredentialsFile("/Users/frank/Git/inno-lab/server/serviceAccountKey.json")
 	if app == nil {
 		var err error
 		app, err = firebase.NewApp(ctx, nil, opt)
