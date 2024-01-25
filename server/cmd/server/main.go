@@ -108,7 +108,7 @@ func processPrompt(prompt string) {
 func main() {
 
 	window := ui.Init()
-	window.SetFullScreen(true)
+	//window.SetFullScreen(true)
 	window.ShowAndRun()
 
 	/*
