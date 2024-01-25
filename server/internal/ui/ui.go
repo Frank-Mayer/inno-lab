@@ -216,7 +216,7 @@ func CameraLook() fyne.CanvasObject {
 		//flow.ClearStates ?
 	})
 
-	rsc, err := fyne.LoadResourceFromURLString("https://raw.githubusercontent.com/Frank-Mayer/inno-lab/main/logo.png")
+	rsc, err := fyne.LoadResourceFromURLString("https://raw.githubusercontent.com/Frank-Mayer/inno-lab/main/beispielPose.png")
 	if err != nil {
 		return renderError(err)
 	}
