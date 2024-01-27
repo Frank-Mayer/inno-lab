@@ -207,6 +207,10 @@ func runeToVk(r rune) (int, bool) {
 		return keybd_event.VK_SP4, false
 	case 'Ü':
 		return keybd_event.VK_SP4, true
+	case 'ß':
+		return keybd_event.VK_SP2, false
+	case '?':
+		return keybd_event.VK_SP2, true
 	default:
 		panic("Unknown rune " + string(r))
 	}
