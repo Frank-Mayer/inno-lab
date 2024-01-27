@@ -9,6 +9,7 @@ require (
 	github.com/charmbracelet/log v0.3.1
 	github.com/go-vgo/robotgo v0.110.0
 	github.com/gorilla/websocket v1.5.1
+	github.com/micmonay/keybd_event v1.1.2
 	gocv.io/x/gocv v0.35.0
 	google.golang.org/api v0.157.0
 	google.golang.org/protobuf v1.32.0
