@@ -104,14 +104,32 @@ func processPrompt(prompt string) {
 		log.Debug("sleep")
 		time.Sleep(1 * time.Second)
 		log.Debug("type")
-		robotgo.TypeStr("/imagine ", 0, 50, 50)
-		robotgo.TypeStr(prompt, 0, 50, 50)
+		TypeStr("/imagine ", 0, 50)
+		TypeStr(prompt, 0, 50)
 		err := robotgo.KeyTap("enter")
 		if err != nil {
 			log.Error("Error sending enter", "error", err)
 		}
 	}()
 }
+
+func TypeStr(str string, args ...int) {
+	pid := 0
+	tm := 10
+	if len(args) > 0 {
+		pid = args[0]
+	}
+	if len(args) > 1 {
+		tm = args[1]
+	}
+
+	for i := 0; i < len([]rune(str)); i++ {
+		ustr := uint32(robotgo.CharCodeAt(str, i))
+		robotgo.UnicodeType(ustr, pid)
+		<-time.After(time.Duration(tm) * time.Millisecond)
+	}
+}
+
 func Init() {
 	http.HandleFunc("/", handleIndex)
 	http.HandleFunc("/set_input_pos", setInputPos)
