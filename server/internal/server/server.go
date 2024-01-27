@@ -124,6 +124,10 @@ func TypeStr(str string, args ...int) {
 	}
 
 	for i := 0; i < len([]rune(str)); i++ {
+		switch str[i] {
+		case '/':
+			robotgo.KeyTap("num/")
+		}
 		ustr := uint32(robotgo.CharCodeAt(str, i))
 		robotgo.UnicodeType(ustr, pid)
 		<-time.After(time.Duration(tm) * time.Millisecond)
