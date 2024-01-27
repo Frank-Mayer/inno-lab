@@ -38,7 +38,7 @@ func uploadImageToFirebaseStorage(imageData image.Image) (string, error) {
 	ctx := context.Background()
 
 	// Erstelle eine neue Firebase-App mit den bereitgestellten Optionen
-	opt := option.WithCredentialsFile("/Users/frank/Git/inno-lab/server/serviceAccountKey.json")
+	opt := option.WithCredentialsFile("/innolab/serviceAccountKey.json")
 	app, err := firebase.NewApp(ctx, nil, opt)
 	if err != nil {
 		return "", fmt.Errorf("fehler beim Erstellen der Firebase-App: %v", err)

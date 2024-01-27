@@ -91,6 +91,8 @@ func sendImage(w http.ResponseWriter, r *http.Request) {
 }
 
 func processPrompt(prompt string) {
+	inputPosX := inputPosX + 50
+	inputPosY := inputPosY + 20
 	log.Info("Processing prompt", "prompt", prompt)
 	robotgo.KeySleep = 300
 	robotgo.MouseSleep = 200
