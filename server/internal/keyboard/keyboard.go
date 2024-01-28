@@ -1,13 +1,49 @@
 package keyboard
 
 import (
+	"errors"
 	"runtime"
+	"sync"
 	"time"
 
 	"github.com/micmonay/keybd_event"
+	"golang.design/x/clipboard"
 )
 
-func SendKeys(text string) {
+func SendKeys(text string) error {
+	kb, err := keybd_event.NewKeyBonding()
+	if err != nil {
+		return errors.Join(errors.New("could not create keybd_event"), err)
+	}
+
+	wg := sync.WaitGroup{}
+	wg.Add(2)
+	go func() {
+		// For linux, it is very important to wait 2 seconds
+		if runtime.GOOS == "linux" {
+			<-time.After(2 * time.Second)
+		}
+		wg.Done()
+	}()
+
+	go func() {
+		<-clipboard.Write(clipboard.FmtText, []byte(text))
+		wg.Done()
+	}()
+
+	wg.Wait()
+
+	// set keys
+	kb.HasCTRL(true)
+	kb.SetKeys(keybd_event.VK_V)
+	if err := kb.Launching(); err != nil {
+		return errors.Join(errors.New("could not launch keybd_event"), err)
+	}
+	return nil
+}
+
+// Insert simulates Ctrl+V
+func Insert() error {
 	kb, err := keybd_event.NewKeyBonding()
 	if err != nil {
 		panic(err)
@@ -19,20 +55,14 @@ func SendKeys(text string) {
 	}
 
 	// set keys
-	for _, r := range text {
-		vk, shift := runeToVk(r)
-		if shift {
-			kb.HasSHIFT(true)
-		}
-		kb.SetKeys(vk)
-		err = kb.Launching()
-		if err != nil {
-			panic(err)
-		}
-		if shift {
-			kb.HasSHIFT(false)
-		}
+	kb.HasCTRL(true)
+	kb.SetKeys(keybd_event.VK_V)
+	err = kb.Launching()
+	if err != nil {
+		return err
 	}
+	kb.HasCTRL(false)
+	return nil
 }
 
 func runeToVk(r rune) (int, bool) {

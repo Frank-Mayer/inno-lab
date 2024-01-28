@@ -11,6 +11,7 @@ require (
 	github.com/gorilla/websocket v1.5.1
 	github.com/micmonay/keybd_event v1.1.2
 	gocv.io/x/gocv v0.35.0
+	golang.design/x/clipboard v0.7.0
 	google.golang.org/api v0.157.0
 	google.golang.org/protobuf v1.32.0
 )
@@ -35,7 +36,7 @@ require (
 	github.com/fyne-io/image v0.0.0-20220602074514-4956b0afb3d2 // indirect
 	github.com/gen2brain/shm v0.0.0-20230802011745-f2460f5984f7 // indirect
 	github.com/go-gl/gl v0.0.0-20211210172815-726fda9656d6 // indirect
-	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20221017161538-93cebf72946b // indirect
+	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20231223183121-56fa3ac82ce7 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/go-logr/logr v1.3.0 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
@@ -50,7 +51,7 @@ require (
 	github.com/googleapis/enterprise-certificate-proxy v0.3.2 // indirect
 	github.com/googleapis/gax-go/v2 v2.12.0 // indirect
 	github.com/gopherjs/gopherjs v1.17.2 // indirect
-	github.com/jezek/xgb v1.1.0 // indirect
+	github.com/jezek/xgb v1.1.1 // indirect
 	github.com/jsummers/gobmp v0.0.0-20151104160322-e2ba15ffa76e // indirect
 	github.com/kbinani/screenshot v0.0.0-20230812210009-b87d31814237 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
@@ -88,8 +89,9 @@ require (
 	go.opentelemetry.io/otel/trace v1.21.0 // indirect
 	golang.org/x/crypto v0.18.0 // indirect
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d // indirect
-	golang.org/x/image v0.12.0 // indirect
-	golang.org/x/mobile v0.0.0-20230531173138-3c911d8e3eda // indirect
+	golang.org/x/exp/shiny v0.0.0-20240119083558-1b970713d09a // indirect
+	golang.org/x/image v0.14.0 // indirect
+	golang.org/x/mobile v0.0.0-20231127183840-76ac6878050a // indirect
 	golang.org/x/net v0.20.0 // indirect
 	golang.org/x/oauth2 v0.16.0 // indirect
 	golang.org/x/sync v0.6.0 // indirect
