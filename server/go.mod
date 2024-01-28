@@ -5,7 +5,7 @@ go 1.21.6
 require (
 	firebase.google.com/go v3.13.0+incompatible
 	fyne.io/fyne/v2 v2.4.3
-	github.com/Frank-Mayer/fyneflow v0.1.0
+	github.com/Frank-Mayer/fyneflow v0.2.0
 	github.com/charmbracelet/log v0.3.1
 	github.com/go-vgo/robotgo v0.110.0
 	github.com/gorilla/websocket v1.5.1

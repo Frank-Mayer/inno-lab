@@ -23,7 +23,7 @@ import (
 var (
 	logo   *canvas.Image
 	bottom *fyne.Container
-	flow   *fyneflow.Flow[string]
+	flow   *fyneflow.Flow
 )
 
 func Init() fyne.Window {
@@ -37,7 +37,7 @@ func Init() fyne.Window {
 	myApp := app.New()
 	myWindow := myApp.NewWindow("UIUI")
 
-	flow = fyneflow.NewFlow[string](myWindow)
+	flow = fyneflow.NewFlow(myWindow)
 	flow.Set("CreateUI", CreateUI)
 	flow.Set("CreateScenario", CreateScenario)
 	flow.Set("CameraLook", CameraLook)
