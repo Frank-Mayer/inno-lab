@@ -1,7 +1,10 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
+	"strings"
+	"sync"
 	"sync/atomic"
 	"time"
 
@@ -23,8 +26,8 @@ var (
 )
 
 var (
-	promptCh     = make(chan string)
-	urlCh        = make(chan string)
+	promptCh     = make(chan string, 1)
+	urlCh        = make(chan string, 1)
 	expectsImage = atomic.Bool{}
 )
 
@@ -84,13 +87,24 @@ func sendImage(w http.ResponseWriter, r *http.Request) {
 			"prompt", res.Prompt,
 			"image", res.Src,
 		)
-		if expectsImage.Load() {
+		if strings.Contains(res.Prompt, "π") {
+			log.Info("Received image", "exponat", "2", "image", res.Src)
+			storeImage(res.Src)
+		} else if expectsImage.Load() {
+			log.Info("Received image", "exponat", "1", "image", res.Src)
 			urlCh <- res.Src
+			log.Debug("Wrote to result channel")
+			expectsImage.Store(false)
+		} else {
+			log.Error("Received image (throwing away)", "exponat", "N/A", "image", res.Src)
 		}
 	}
 }
 
+var chromeWriteMut = sync.Mutex{}
+
 func processPrompt(prompt string) {
+	_ = chromeWriteMut.TryLock()
 	inputPosX := inputPosX + 50
 	inputPosY := inputPosY + 20
 	log.Info("Processing prompt", "prompt", prompt)
@@ -100,17 +114,14 @@ func processPrompt(prompt string) {
 	robotgo.Move(inputPosX, inputPosY)
 	robotgo.MoveClick(inputPosX, inputPosY)
 	robotgo.MoveClick(inputPosX, inputPosY)
-	go func() {
-		log.Debug("sleep")
-		time.Sleep(1 * time.Second)
-		log.Debug("type")
-		TypeStr("/imagine ", 0, 50)
-		TypeStr(prompt, 0, 50)
-		err := robotgo.KeyTap("enter")
-		if err != nil {
-			log.Error("Error sending enter", "error", err)
-		}
-	}()
+	log.Debug("sleep")
+	time.Sleep(1 * time.Second)
+	log.Debug("type")
+	TypeStr("/imagine "+prompt, 0, 25)
+	err := robotgo.KeyTap("enter")
+	if err != nil {
+		log.Error("Error sending enter", "error", err)
+	}
 }
 
 func TypeStr(str string, args ...int) {
@@ -122,7 +133,6 @@ func TypeStr(str string, args ...int) {
 	if len(args) > 1 {
 		tm = args[1]
 	}
-
 	for i := 0; i < len([]rune(str)); i++ {
 		ustr := uint32(robotgo.CharCodeAt(str, i))
 		robotgo.UnicodeType(ustr, pid)
@@ -130,10 +140,63 @@ func TypeStr(str string, args ...int) {
 	}
 }
 
+var (
+	images = make(map[int]string)
+	count  = 3
+	index  = 0
+)
+
+func htmlImage(src string) string {
+	if src == "" {
+		src = "https://raw.githubusercontent.com/Frank-Mayer/inno-lab/main/logo.png"
+	}
+	return `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="refresh" content="60">
+    <title>Veritas</title>
+</head>
+<body>
+    <div style="background-image: url('` + src + `'); background-size: contain; background-repeat: no-repeat; background-position: center center; width: 100vw; height: 100vh;"></div>
+    <style>
+        :root {
+            background-color: rgb(23, 23, 24);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        } 
+    </style>
+</body>
+</html>`
+}
+
+func createImageHandler(i int) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, _ *http.Request) {
+		src := images[i]
+		w.Header().Set("Content-Type", "text/html")
+		if _, err := w.Write([]byte(htmlImage(src))); err != nil {
+			log.Error("Error writing image", "error", err)
+		}
+	}
+}
+
+func storeImage(src string) {
+	log.Debug("store image", "src", src)
+	images[index] = src
+	index = (index + 1) % count
+}
+
 func Init() {
 	http.HandleFunc("/", handleIndex)
 	http.HandleFunc("/set_input_pos", setInputPos)
 	http.HandleFunc("/send_image", sendImage)
+	for i := 0; i < count; i++ {
+		http.HandleFunc(fmt.Sprintf("/image/%d", i), createImageHandler(i))
+	}
 
 	// Start the server on port 8080
 	go func() {
@@ -150,17 +213,27 @@ func Init() {
 			if inputPosX != -1 && inputPosY != -1 {
 				log.Info("Input position set", "x", inputPosX, "y", inputPosY)
 				processPrompt(prompt)
+				time.Sleep(1 * time.Second)
+				chromeWriteMut.Unlock()
 			} else {
-				log.Warn("Input position not set")
+				log.Error("Input position not set")
 			}
 		}
 	}()
 }
 
-func SentPrompt(prompt string) string {
+func SendBackgroundPrompt(prompt string) {
+	chromeWriteMut.Lock()
+	promptCh <- prompt
+	chromeWriteMut.Lock()
+	chromeWriteMut.Unlock()
+}
+
+func SentPrompt(prompt string) chan string {
+	chromeWriteMut.Lock()
 	promptCh <- prompt
 	expectsImage.Store(true)
-	url := <-urlCh
-	expectsImage.Store(false)
-	return url
+	chromeWriteMut.Lock()
+	chromeWriteMut.Unlock()
+	return urlCh
 }
