@@ -2,7 +2,6 @@ package firebase
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"image"
 	"image/jpeg"
@@ -12,6 +11,7 @@ import (
 	"encoding/json"
 
 	firebase "firebase.google.com/go"
+	"github.com/pkg/errors"
 	"gocv.io/x/gocv"
 	"google.golang.org/api/option"
 )
@@ -106,7 +106,7 @@ func uploadImageToFirebaseStorage(imageData image.Image) (string, error) {
 func takePicture() (image.Image, error) {
 	vidCapture, err := gocv.OpenVideoCapture(0)
 	if err != nil {
-		return nil, errors.Join(errors.New("failed to open video capture"), err)
+		return nil, errors.Wrap(err, "failed to open video capture")
 	}
 	defer vidCapture.Close()
 
@@ -119,7 +119,7 @@ func takePicture() (image.Image, error) {
 
 	imageForImage, err := mat.ToImage()
 	if err != nil {
-		return nil, errors.Join(errors.New("failed to convert mat to image"), err)
+		return nil, errors.Wrap(err, "failed to convert mat to image")
 	}
 
 	return imageForImage, nil
@@ -128,12 +128,12 @@ func takePicture() (image.Image, error) {
 func GetWebcamUrl() (string, error) {
 	img, err := takePicture()
 	if err != nil {
-		return "", errors.Join(errors.New("failed to take picture"), err)
+		return "", errors.Wrap(err, "failed to take picture")
 	}
 
 	url, err := uploadImageToFirebaseStorage(img)
 	if err != nil {
-		return "", errors.Join(errors.New("failed to upload image to firebase storage"), err)
+		return "", errors.Wrap(err, "failed to upload image to firebase storage")
 	}
 
 	return url, nil
