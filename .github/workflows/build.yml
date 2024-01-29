@@ -22,10 +22,14 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: macos-latest
     steps:
-      - name: Setup Yab
-        uses: Frank-Mayer/yab-setup@v1.0.0
       - name: OpenCV
         run: brew install opencv
+      - name: Setup Go environment
+        uses: actions/setup-go@v5.0.0
+        with:
+          go-version: 1.21.6
+      - name: Setup Yab
+        run: go install github.com/Frank-Mayer/yab/cmd/yab@latest
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup Pages
