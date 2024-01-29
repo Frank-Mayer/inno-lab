@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 
 	firebase "firebase.google.com/go"
+	"github.com/Frank-Mayer/inno-lab/internal/utils"
 	"github.com/pkg/errors"
 	"gocv.io/x/gocv"
 	"google.golang.org/api/option"
@@ -33,12 +34,14 @@ type FirebaseFileAPI struct {
 	DownloadTokens  string    `json:"downloadTokens"`
 }
 
+var credentialsLocation = utils.EnvString("CREDENTIALS_LOCATION")
+
 // Funktion zum Hochladen eines Bildes nach Firebase Storage
 func uploadImageToFirebaseStorage(imageData image.Image) (string, error) {
 	ctx := context.Background()
 
 	// Erstelle eine neue Firebase-App mit den bereitgestellten Optionen
-	opt := option.WithCredentialsFile("/innolab/serviceAccountKey.json")
+	opt := option.WithCredentialsFile(credentialsLocation)
 	app, err := firebase.NewApp(ctx, nil, opt)
 	if err != nil {
 		return "", fmt.Errorf("fehler beim Erstellen der Firebase-App: %v", err)

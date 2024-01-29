@@ -31,6 +31,11 @@ var (
 	expectsImage = atomic.Bool{}
 )
 
+func focusBack() {
+	// simulate command + tab
+	robotgo.KeyTap("command", "tab")
+}
+
 func handleIndex(w http.ResponseWriter, r *http.Request) {
 	// redirect to discord
 	http.Redirect(w, r, "https://discord.com/channels/@me/1019912799977230416", http.StatusTemporaryRedirect)
@@ -122,6 +127,7 @@ func processPrompt(prompt string) {
 	if err != nil {
 		log.Error("Error sending enter", "error", err)
 	}
+	focusBack()
 }
 
 func TypeStr(str string, args ...int) {

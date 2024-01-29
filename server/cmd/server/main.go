@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/Frank-Mayer/inno-lab/internal/server"
 	"github.com/Frank-Mayer/inno-lab/internal/ui"
+	"github.com/Frank-Mayer/inno-lab/internal/utils"
 
 	"github.com/charmbracelet/log"
 )
@@ -16,6 +17,6 @@ func main() {
 
 	log.Info("Starting UI...")
 	window := ui.Init()
-	window.SetFullScreen(true)
+	window.SetFullScreen(utils.EnvBool("FULLSCREEN"))
 	window.ShowAndRun()
 }
