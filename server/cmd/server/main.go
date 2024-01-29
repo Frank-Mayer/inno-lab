@@ -16,6 +16,6 @@ func main() {
 
 	log.Info("Starting UI...")
 	window := ui.Init()
-	//window.SetFullScreen(true)
+	window.SetFullScreen(true)
 	window.ShowAndRun()
 }
