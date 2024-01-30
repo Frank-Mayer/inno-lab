@@ -113,7 +113,7 @@ func CreateUI() fyne.CanvasObject {
 		_ = flow.GoTo("CameraLook")
 	})
 	button2 := widget.NewButton("Herr", func() {
-		_ = flow.UseStateStr("gender", "Man").Set("Man")
+		_ = flow.UseStateStr("gender", "Mann").Set("Mann")
 		_ = flow.GoTo("CameraLook")
 	})
 	//Non-Binary Button?
@@ -132,6 +132,22 @@ func CreateUI() fyne.CanvasObject {
 	return stack
 }
 
+func genderVeriation(male string, female string) string {
+	gender, err := flow.UseStateStr("gender", "").Get()
+	if err != nil {
+		displayError(errors.Wrap(err, "failed to read state for gender"))
+		return ""
+	}
+	switch gender {
+	case "Mann":
+		return male
+	case "Frau":
+		return female
+	}
+	displayError(fmt.Errorf("invalid gender '%s'", gender))
+	return ""
+}
+
 func CreateScenario() fyne.CanvasObject {
 	text1 := canvas.NewText("In welchem Szenario möchten Sie sich sehen?", color.White)
 	text1.TextSize = 40
@@ -148,7 +164,7 @@ func CreateScenario() fyne.CanvasObject {
 		return renderError(err)
 	}
 
-	button1 := widget.NewButton("Politiker:in", func() {
+	button1 := widget.NewButton(genderVeriation("Politiker", "Politikerin"), func() {
 		_ = flow.GoTo("Loading")
 		cancelTo := timeout("generating politician picture")
 		go func() {
@@ -162,7 +178,7 @@ func CreateScenario() fyne.CanvasObject {
 			cancelTo()
 		}()
 	})
-	button2 := widget.NewButton("Astronaut:in", func() {
+	button2 := widget.NewButton(genderVeriation("Astronaut", "Astronautin"), func() {
 		_ = flow.GoTo("Loading")
 		cancelTo := timeout("generating astronaut picture")
 		go func() {
@@ -218,7 +234,7 @@ func CreateScenario() fyne.CanvasObject {
 			cancelTo()
 		}()
 	})
-	button6 := widget.NewButton("Fußballer:in", func() {
+	button6 := widget.NewButton(genderVeriation("Fußballer", "Fußballerin"), func() {
 		_ = flow.GoTo("Loading")
 		cancelTo := timeout("generating football player picture")
 		go func() {
@@ -232,7 +248,7 @@ func CreateScenario() fyne.CanvasObject {
 			cancelTo()
 		}()
 	})
-	button7 := widget.NewButton("Auf Abenteuer", func() {
+	button7 := widget.NewButton(genderVeriation("Abenteurer", "Abenteurerin"), func() {
 		_ = flow.GoTo("Loading")
 		cancelTo := timeout("generating adventure picture")
 		go func() {
