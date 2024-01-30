@@ -113,7 +113,7 @@ func CreateUI() fyne.CanvasObject {
 		_ = flow.GoTo("CameraLook")
 	})
 	button2 := widget.NewButton("Herr", func() {
-		_ = flow.UseStateStr("gender", "Man").Set("Mann")
+		_ = flow.UseStateStr("gender", "Man").Set("Man")
 		_ = flow.GoTo("CameraLook")
 	})
 	//Non-Binary Button?
