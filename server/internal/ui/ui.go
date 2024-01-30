@@ -374,10 +374,13 @@ func CameraLook() fyne.CanvasObject {
 
 	button1 := widget.NewButton("Bereit?", func() {
 		webcamUrlBind := flow.UseStateStr("webcamUrl", "")
+		_ = flow.GoTo("Loading")
 		if webcamUrl, err := firebase.GetWebcamUrl(); err == nil {
 			if err := webcamUrlBind.Set(webcamUrl); err != nil {
 				displayError(err)
 				return
+			} else {
+				log.Debug("Webcam URL", "url", webcamUrl)
 			}
 		} else {
 			displayError(err)
