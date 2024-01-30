@@ -113,7 +113,7 @@ func CreateUI() fyne.CanvasObject {
 		_ = flow.GoTo("CameraLook")
 	})
 	button2 := widget.NewButton("Herr", func() {
-		_ = flow.UseStateStr("gender", "Mann").Set("Mann")
+		_ = flow.UseStateStr("gender", "Man").Set("Mann")
 		_ = flow.GoTo("CameraLook")
 	})
 	//Non-Binary Button?
@@ -139,9 +139,9 @@ func genderVeriation(male string, female string) string {
 		return ""
 	}
 	switch gender {
-	case "Mann":
+	case "Man":
 		return male
-	case "Frau":
+	case "Woman":
 		return female
 	}
 	displayError(fmt.Errorf("invalid gender '%s'", gender))
