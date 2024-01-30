@@ -38,8 +38,7 @@ var (
 )
 
 func focusBack() {
-	robotgo.Move(savePosX, savePosY)
-	robotgo.MoveClick(savePosX, savePosY)
+	robotgo.MoveRelative(1791, -400)
 }
 
 func handleIndex(w http.ResponseWriter, r *http.Request) {
