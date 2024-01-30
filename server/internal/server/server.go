@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/Frank-Mayer/inno-lab/internal/schema"
+	"github.com/Frank-Mayer/inno-lab/internal/utils"
 	"github.com/charmbracelet/log"
 	"github.com/go-vgo/robotgo"
 	"github.com/gorilla/websocket"
@@ -31,9 +32,14 @@ var (
 	expectsImage = atomic.Bool{}
 )
 
+var (
+	savePosX = utils.EnvInt("SAVE_POS_X")
+	savePosY = utils.EnvInt("SAVE_POS_Y")
+)
+
 func focusBack() {
-	// simulate command + tab
-	robotgo.KeyTap("command", "tab")
+	robotgo.Move(savePosX, savePosY)
+	robotgo.MoveClick(savePosX, savePosY)
 }
 
 func handleIndex(w http.ResponseWriter, r *http.Request) {
