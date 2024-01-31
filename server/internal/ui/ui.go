@@ -348,25 +348,25 @@ func LoadingInfo() fyne.CanvasObject {
 
 	switch rand.Intn(9) {
 	case 0:
-		textForString = "Wussten Sie, dass an der Entwicklung dieses Projektes Studenten der Hochschule Heilbronn & Hochschule Pforzheim beteiligt waren? Unseren Namen:  Frank, Franziska, Maria und Yagmur."
+		textForString = "Wussten Sie,... \n… dass an der Entwicklung dieses Projektes Studenten der Hochschule Heilbronn & Hochschule Pforzheim beteiligt waren? Unseren Namen:  Frank, Franziska, Maria und Yagmur."
 	case 1:
-		textForString = "Wussten Sie wie unsere KI-Bilder generiert werden? Von einem aus zufälligen Pixeln erstellten Bild, wird ein Foto konstruiert."
+		textForString = "Wussten Sie... \n… wie unsere KI-Bilder generiert werden? Von einem aus zufälligen Pixeln erstellten Bild, wird ein Foto konstruiert."
 	case 2:
-		textForString = "Wussten Sie die Bilder die Sie sehen, sind nach dem aktuellen Stand der Technik die besten Deepfakes die ohne zusätzliche Fachkenntnisse möglich sind ?  Schnell und Einfach also!"
+		textForString = "Wussten Sie... \n… die Bilder die Sie sehen, sind nach dem aktuellen Stand der Technik die besten Deepfakes die ohne zusätzliche Fachkenntnisse möglich sind ?  Schnell und Einfach also!"
 	case 3:
-		textForString = "Wussten Sie"
+		textForString = "Wussten Sie... \n… welche Eingaben wir benötigen um diese Bilder zu generieren? Ein Bild von Ihnen, ein Hintergrundbild (optional) und eine textuelle Beschreibung der Szene."
 	case 4:
-		textForString = "Wussten Sie"
+		textForString = "Wussten Sie... \n…  worin sich unsere Deepfakes von denen die man im Internet sieht unterscheiden?  Sie stammen von geübten KI Profis und wurden manuell nachbearbeitet. Der gesamte Erstellungsprozess eines Deepfakes dauert Stunden und Tage."
 	case 5:
-		textForString = "Wussten Sie"
+		textForString = "Wussten Sie,... \n… dass der Begriff \"Deepfake\" 2017 auf Reddit geprägt wurde und sich aus den Wörtern \"deep\" (tief), wie in der KI-Tiefenlerntechnologie, und \"fake\" (gefälscht) zusammensetzt ?"
 	case 6:
-		textForString = "Wussten Sie"
+		textForString = "Wussten Sie... \n… professionelle Deepfakes können für verschiedene Zwecke verwendet werden, z. B. für Unterhaltung, Betrug oder Propaganda ?"
 	case 7:
-		textForString = "Wussten Sie"
+		textForString = "Wussten Sie,... \n… dass KI-Modelle, die mit Bildern trainiert werden, Vorurteile übernehmen können, wenn die Trainingsdaten selbst stereotypisch sind?"
 	case 8:
-		textForString = "Wussten Sie"
+		textForString = "Wussten Sie,... \n… dass einige Länder bereits Gesetze erlassen haben, die die Erstellung und Verbreitung von Deepfakes, die für böswillige Zwecke verwendet werden, verbieten?"
 	case 9:
-		textForString = "Wussten Sie"
+		textForString = "Wussten Sie,... \n… dass Deepfakes verwendet werden können, um Menschen in Situationen zu bringen, in denen sie sich nicht befinden (wollen)?"
 	}
 
 	text3 := canvas.NewText(textForString, color.White)
