@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"github.com/Frank-Mayer/inno-lab/internal/firebase"
 	"image/color"
 	"math/rand"
 	"strings"
@@ -14,7 +15,6 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 	"github.com/Frank-Mayer/fyneflow"
-	"github.com/Frank-Mayer/inno-lab/internal/firebase"
 	"github.com/Frank-Mayer/inno-lab/internal/server"
 	"github.com/charmbracelet/log"
 	"github.com/pkg/errors"
