@@ -83,7 +83,9 @@ func Init() fyne.Window {
 	flow.Set("Loading", Loading)
 	flow.Set("error", UiUiError)
 	flow.Set("LoadingInfo", LoadingInfo)
-	flow.Set("Countdown", Countdown)
+	flow.Set("c1", C1)
+	flow.Set("c2", C2)
+	flow.Set("c3", C3)
 
 	return myWindow
 }
@@ -487,20 +489,7 @@ func CameraLook() fyne.CanvasObject {
 	text3.TextStyle = fyne.TextStyle{Monospace: true}
 
 	button1 := widget.NewButton("Bereit?", func() {
-		webcamUrlBind := flow.UseStateStr("webcamUrl", "")
-		_ = flow.GoTo("Loading")
-		if webcamUrl, err := firebase.GetWebcamUrl(); err == nil {
-			if err := webcamUrlBind.Set(webcamUrl); err != nil {
-				displayError(err)
-				return
-			} else {
-				log.Debug("Webcam URL", "url", webcamUrl)
-			}
-		} else {
-			displayError(err)
-			return
-		}
-		_ = flow.GoTo("CreateScenario")
+		_ = flow.GoTo("c3")
 	})
 
 	stack := container.NewStack(
@@ -549,25 +538,52 @@ func ShowPic() fyne.CanvasObject {
 	return stack
 }
 
-func Countdown() fyne.CanvasObject {
-	// Container mit Canvas erstellen
-	flashRec := canvas.NewRectangle(color.White)
-	flashContainer := container.New(layout.NewGridLayout(1), flashRec)
+func C1() fyne.CanvasObject {
+	text := canvas.NewText("1", color.White)
+	text.TextSize = 100
+	go func() {
+		<-time.After(time.Second)
+		webcamUrlBind := flow.UseStateStr("webcamUrl", "")
+		_ = flow.GoTo("Loading")
+		if webcamUrl, err := firebase.GetWebcamUrl(); err == nil {
+			if err := webcamUrlBind.Set(webcamUrl); err != nil {
+				displayError(err)
+				return
+			} else {
+				log.Debug("Webcam URL", "url", webcamUrl)
+			}
+		} else {
+			displayError(err)
+			return
+		}
+		_ = flow.GoTo("CreateScenario")
 
-	countdown := 3
-	countdownLabel := canvas.NewText("", color.White)
-	countdownLabel.Alignment = fyne.TextAlignCenter
+	}()
+	return container.NewCenter(
+		text,
+	)
+}
 
-	//countdownContainer := container.New(layout.NewGridLayout(1), countdownLabel)
+func C2() fyne.CanvasObject {
+	text := canvas.NewText("2", color.White)
+	text.TextSize = 100
+	go func() {
+		<-time.After(time.Second)
+		_ = flow.GoTo("c1")
+	}()
+	return container.NewCenter(
+		text,
+	)
+}
 
-	for countdown > 0 {
-		countdownLabel.Text = fmt.Sprint(countdown)
-		time.Sleep(time.Second)
-		countdown--
-	}
-
-	stack := container.NewStack(flashContainer)
-	_ = flow.GoTo("Loading")
-	return stack
-
+func C3() fyne.CanvasObject {
+	text := canvas.NewText("3", color.White)
+	text.TextSize = 100
+	go func() {
+		<-time.After(time.Second)
+		_ = flow.GoTo("c2")
+	}()
+	return container.NewCenter(
+		text,
+	)
 }
