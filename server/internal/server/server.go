@@ -151,20 +151,17 @@ var (
 	index  = 0
 )
 
-func htmlImage(src string) string {
-	if src == "" {
-		src = "https://raw.githubusercontent.com/Frank-Mayer/inno-lab/main/logo.png"
-	}
-	return `<!DOCTYPE html>
+func htmlImage(index int) string {
+	return `
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="refresh" content="60">
     <title>Veritas</title>
 </head>
 <body>
-    <div style="background-image: url('` + src + `'); background-size: contain; background-repeat: no-repeat; background-position: center center; width: 100vw; height: 100vh;"></div>
+    <div id="image" style="background-image: url('https://raw.githubusercontent.com/Frank-Mayer/inno-lab/main/logo.png'); background-size: contain; background-repeat: no-repeat; background-position: center center; width: 100vw; height: 100vh;"></div>
     <style>
         :root {
             background-color: rgb(23, 23, 24);
@@ -175,15 +172,43 @@ func htmlImage(src string) string {
             box-sizing: border-box;
         } 
     </style>
+    <script>
+    window.addEventListener("click", function() {
+        document.documentElement.requestFullscreen({navigationUI: "hide"});
+    })
+    async function updateImage() {
+        const res = await fetch("/img_src/` + fmt.Sprintf("%d", index) + `");
+        const src = await res.text();
+        console.log(src);
+        const divEl = document.getElementById("image");
+        divEl.style.backgroundImage = "url('" + src + "')";
+    }
+    window.setInterval(updateImage, 1000);
+    </script>
 </body>
-</html>`
+</html>
+
+    `
+
 }
 
-func createImageHandler(i int) func(w http.ResponseWriter, r *http.Request) {
+func createImageHtmlHandler(i int) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, _ *http.Request) {
-		src := images[i]
 		w.Header().Set("Content-Type", "text/html")
-		if _, err := w.Write([]byte(htmlImage(src))); err != nil {
+		if _, err := w.Write([]byte(htmlImage(i))); err != nil {
+			log.Error("Error writing image", "error", err)
+		}
+	}
+}
+
+func createImageSrcHandler(i int) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "text/plain")
+		src, ok := images[i]
+		if !ok || src == "" {
+			src = "https://raw.githubusercontent.com/Frank-Mayer/inno-lab/main/logo.png"
+		}
+		if _, err := w.Write([]byte(src)); err != nil {
 			log.Error("Error writing image", "error", err)
 		}
 	}
@@ -200,7 +225,8 @@ func Init() {
 	http.HandleFunc("/set_input_pos", setInputPos)
 	http.HandleFunc("/send_image", sendImage)
 	for i := 0; i < count; i++ {
-		http.HandleFunc(fmt.Sprintf("/image/%d", i), createImageHandler(i))
+		http.HandleFunc(fmt.Sprintf("/image/%d", i), createImageHtmlHandler(i))
+		http.HandleFunc(fmt.Sprintf("/img_src/%d", i), createImageSrcHandler(i))
 	}
 
 	// Start the server on port 8080
