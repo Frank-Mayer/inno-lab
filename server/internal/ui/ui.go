@@ -32,7 +32,7 @@ func Init() fyne.Window {
 		panic(err)
 	}
 	logo = canvas.NewImageFromResource(rsc)
-	bottom = container.New(layout.NewCenterLayout(), container.New(layout.NewGridWrapLayout(fyne.NewSize(75, 25)), logo), layout.NewSpacer())
+	bottom = container.New(layout.NewCenterLayout(), container.New(layout.NewGridWrapLayout(fyne.NewSize(150, 50)), logo), layout.NewSpacer())
 
 	myApp := app.New()
 	myWindow := myApp.NewWindow("UIUI")
@@ -108,6 +108,9 @@ func CreateUI() fyne.CanvasObject {
 	text2.Alignment = fyne.TextAlignCenter
 	text2.TextStyle = fyne.TextStyle{Monospace: true}
 
+	text3 := canvas.NewText(" ", color.White)
+	text3.TextSize = 30
+
 	button1 := widget.NewButton("Frau", func() {
 		_ = flow.UseStateStr("gender", "Woman").Set("Woman")
 		_ = flow.GoTo("CameraLook")
@@ -123,10 +126,12 @@ func CreateUI() fyne.CanvasObject {
 		container.New(layout.NewGridLayout(2),
 			button1, button2), layout.NewSpacer())
 
+	textGrid := container.New(layout.NewGridWrapLayout(fyne.NewSize(70, 70)), text3)
+
 	stack := container.NewStack(
 
 		container.NewBorder(top,
-			bottom, nil, nil,
+			bottom, textGrid, textGrid,
 			middle))
 
 	return stack
@@ -326,6 +331,54 @@ func Loading() fyne.CanvasObject {
 			container.NewVBox(text1, text2),
 		),
 	)
+}
+
+func LoadingInfo() fyne.CanvasObject {
+	text1 := canvas.NewText("Bitte warten...", color.White)
+	text1.TextSize = 50
+	text1.Alignment = fyne.TextAlignCenter
+	text1.TextStyle = fyne.TextStyle{Monospace: true}
+
+	text2 := canvas.NewText("Fass mich bitte nicht an, ich bin empfindlich.", color.RGBA{R: 255, G: 0, B: 0, A: 255})
+	text2.TextSize = 20
+	text2.Alignment = fyne.TextAlignCenter
+	text2.TextStyle = fyne.TextStyle{Monospace: true}
+
+	var textForString string
+
+	switch rand.Intn(9) {
+	case 0:
+		textForString = "Wussten Sie, dass an der Entwicklung dieses Projektes Studenten der Hochschule Heilbronn & Hochschule Pforzheim beteiligt waren? Unseren Namen:  Frank, Franziska, Maria und Yagmur."
+	case 1:
+		textForString = "Wussten Sie wie unsere KI-Bilder generiert werden? Von einem aus zufälligen Pixeln erstellten Bild, wird ein Foto konstruiert."
+	case 2:
+		textForString = "Wussten Sie die Bilder die Sie sehen, sind nach dem aktuellen Stand der Technik die besten Deepfakes die ohne zusätzliche Fachkenntnisse möglich sind ?  Schnell und Einfach also!"
+	case 3:
+		textForString = "Wussten Sie"
+	case 4:
+		textForString = "Wussten Sie"
+	case 5:
+		textForString = "Wussten Sie"
+	case 6:
+		textForString = "Wussten Sie"
+	case 7:
+		textForString = "Wussten Sie"
+	case 8:
+		textForString = "Wussten Sie"
+	case 9:
+		textForString = "Wussten Sie"
+	}
+
+	text3 := canvas.NewText(textForString, color.White)
+	text3.TextSize = 30
+	text3.Alignment = fyne.TextAlignCenter
+	text3.TextStyle = fyne.TextStyle{Monospace: true}
+
+	return container.NewBorder(
+		nil, bottom, nil, nil,
+		container.NewCenter(
+			container.NewVBox(text1, text2, layout.NewSpacer(), text3),
+		))
 }
 
 var lastPromptPhoto string
