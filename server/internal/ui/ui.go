@@ -21,9 +21,11 @@ import (
 )
 
 var (
-	logo   *canvas.Image
-	bottom *fyne.Container
-	flow   *fyneflow.Flow
+	logo    *canvas.Image
+	logohhn *canvas.Image
+	logohp  *canvas.Image
+	bottom  *fyne.Container
+	flow    *fyneflow.Flow
 )
 
 func Init() fyne.Window {
@@ -32,7 +34,43 @@ func Init() fyne.Window {
 		panic(err)
 	}
 	logo = canvas.NewImageFromResource(rsc)
-	bottom = container.New(layout.NewCenterLayout(), container.New(layout.NewGridWrapLayout(fyne.NewSize(150, 50)), logo), layout.NewSpacer())
+
+	rschhn, err := fyne.LoadResourceFromURLString("https://raw.githubusercontent.com/Frank-Mayer/inno-lab/main/HHN_logo-modified-removebg-preview.png")
+	if err != nil {
+		panic(err)
+	}
+	logohhn = canvas.NewImageFromResource(rschhn)
+
+	rschp, err := fyne.LoadResourceFromURLString("https://raw.githubusercontent.com/Frank-Mayer/inno-lab/main/hochschule-pforzheim-hs-pf-logo-vector-01.png")
+	if err != nil {
+		panic(err)
+	}
+	logohp = canvas.NewImageFromResource(rschp)
+
+	txtfrk := canvas.NewText("Franziska", color.White)
+	txtfrk.TextSize = 10
+	txtfrk.Alignment = fyne.TextAlignCenter
+	txtfrk.TextStyle = fyne.TextStyle{Monospace: true}
+
+	txtfrz := canvas.NewText("Frank", color.White)
+	txtfrz.TextSize = 10
+	txtfrz.Alignment = fyne.TextAlignCenter
+	txtfrz.TextStyle = fyne.TextStyle{Monospace: true}
+
+	txtmm := canvas.NewText("Maria-Magdalena", color.White)
+	txtmm.TextSize = 10
+	txtmm.Alignment = fyne.TextAlignCenter
+	txtmm.TextStyle = fyne.TextStyle{Monospace: true}
+
+	txtym := canvas.NewText("Yagmur Mine", color.White)
+	txtym.TextSize = 10
+	txtym.Alignment = fyne.TextAlignCenter
+	txtym.TextStyle = fyne.TextStyle{Monospace: true}
+
+	var logoGrid fyne.CanvasObject = container.New(layout.NewCenterLayout(), container.New(layout.NewGridWrapLayout(fyne.NewSize(150, 50)), logo), layout.NewSpacer())
+	var hhnGrid fyne.CanvasObject = container.New(layout.NewCenterLayout(), container.New(layout.NewGridWrapLayout(fyne.NewSize(175, 100)), logohhn), layout.NewSpacer())
+	var hpGrid fyne.CanvasObject = container.New(layout.NewCenterLayout(), container.New(layout.NewGridWrapLayout(fyne.NewSize(175, 100)), logohp), layout.NewSpacer())
+	bottom = container.New(layout.NewGridLayout(9), hpGrid, layout.NewSpacer(), txtfrk, txtfrz, logoGrid, txtmm, txtym, layout.NewSpacer(), hhnGrid)
 
 	myApp := app.New()
 	myWindow := myApp.NewWindow("UIUI")
@@ -44,6 +82,8 @@ func Init() fyne.Window {
 	flow.Set("ShowPic", ShowPic)
 	flow.Set("Loading", Loading)
 	flow.Set("error", UiUiError)
+	flow.Set("LoadingInfo", LoadingInfo)
+	flow.Set("Countdown", Countdown)
 
 	return myWindow
 }
@@ -98,41 +138,38 @@ func displayError(err error) {
 }
 
 func CreateUI() fyne.CanvasObject {
-	text1 := canvas.NewText("Bevor es losgeht...", color.White)
+	text1 := canvas.NewText("Bevor es losgeht... Wie möchten Sie angesprochen werden", color.White)
 	text1.TextSize = 30
 	text1.Alignment = fyne.TextAlignCenter
 	text1.TextStyle = fyne.TextStyle{Monospace: true}
 
-	text2 := canvas.NewText("Wie möchten Sie angesprochen werden?", color.White)
+	text2 := canvas.NewText(" ", color.White)
 	text2.TextSize = 30
-	text2.Alignment = fyne.TextAlignCenter
-	text2.TextStyle = fyne.TextStyle{Monospace: true}
-
-	text3 := canvas.NewText(" ", color.White)
-	text3.TextSize = 30
 
 	button1 := widget.NewButton("Frau", func() {
 		_ = flow.UseStateStr("gender", "Woman").Set("Woman")
 		_ = flow.GoTo("CameraLook")
 	})
+
 	button2 := widget.NewButton("Herr", func() {
 		_ = flow.UseStateStr("gender", "Man").Set("Man")
 		_ = flow.GoTo("CameraLook")
 	})
 	//Non-Binary Button?
 
-	top := container.New(layout.NewGridLayout(1), layout.NewSpacer(), container.New(layout.NewGridLayout(1), text1, text2, layout.NewSpacer()))
-	middle := container.New(layout.NewGridLayout(1),
-		container.New(layout.NewGridLayout(2),
-			button1, button2), layout.NewSpacer())
+	middle := container.New(layout.NewCenterLayout(),
+		container.New(layout.NewGridLayout(1), text1,
+			container.New(layout.NewGridLayout(2),
+				container.New(layout.NewGridWrapLayout(fyne.NewSize(600, 400)), button1),
+				container.New(layout.NewGridWrapLayout(fyne.NewSize(600, 400)), button2))))
 
-	textGrid := container.New(layout.NewGridWrapLayout(fyne.NewSize(70, 70)), text3)
+	textGrid := container.New(layout.NewGridWrapLayout(fyne.NewSize(70, 70)), text2)
 
 	stack := container.NewStack(
 
-		container.NewBorder(top,
+		container.NewBorder(textGrid,
 			bottom, textGrid, textGrid,
-			middle))
+			container.NewVBox(middle)))
 
 	return stack
 }
@@ -170,10 +207,10 @@ func CreateScenario() fyne.CanvasObject {
 	}
 
 	button1 := widget.NewButton(genderVeriation("Politiker", "Politikerin"), func() {
-		_ = flow.GoTo("Loading")
+		_ = flow.GoTo("LoadingInfo")
 		cancelTo := timeout("generating politician picture")
 		go func() {
-			promptString := webcamUrl + " https://s.mj.run/hWqyh5IpNio photographic picture of a " + gender + " as a politican in a press conference --iw 2"
+			promptString := webcamUrl + "  ::4 https://s.mj.run/nMc61C0HasE ::1 photographic picture of a  " + gender + "  as a politican in the Bundestag "
 			resUrlChan := server.SentPrompt(promptString)
 			expo2Gen(webcamUrl)
 			if err := promptResult.Set(<-resUrlChan); err != nil {
@@ -184,7 +221,7 @@ func CreateScenario() fyne.CanvasObject {
 		}()
 	})
 	button2 := widget.NewButton(genderVeriation("Astronaut", "Astronautin"), func() {
-		_ = flow.GoTo("Loading")
+		_ = flow.GoTo("LoadingInfo")
 		cancelTo := timeout("generating astronaut picture")
 		go func() {
 			promptString := webcamUrl + " ::4 https://s.mj.run/QY2Z4ddoxck ::1 ultrarealistic picture of a " + gender + " as an astronaut in a space suit, stars and planets in the background "
@@ -198,7 +235,7 @@ func CreateScenario() fyne.CanvasObject {
 		}()
 	})
 	button3 := widget.NewButton("Im Urlaub", func() {
-		_ = flow.GoTo("Loading")
+		_ = flow.GoTo("LoadingInfo")
 		cancelTo := timeout("generating holiday picture")
 		go func() {
 			promptString := webcamUrl + "::4 https://s.mj.run/wb3_lBMHQZw ::1 ultrarealistic picture of a " + gender + " at a holiday resort. warm tones --v 5.2 "
@@ -212,7 +249,7 @@ func CreateScenario() fyne.CanvasObject {
 		}()
 	})
 	button4 := widget.NewButton("Imagewechsel", func() {
-		_ = flow.GoTo("Loading")
+		_ = flow.GoTo("LoadingInfo")
 		cancelTo := timeout("generating image change picture")
 		go func() {
 			promptString := webcamUrl + " ultrarealistic picture of a " + gender + " heavily tattood with piercings in their face, in the background you can see a tattoo parlor --iw 2 "
@@ -226,10 +263,10 @@ func CreateScenario() fyne.CanvasObject {
 		}()
 	})
 	button5 := widget.NewButton("Pop-Star", func() {
-		_ = flow.GoTo("Loading")
+		_ = flow.GoTo("LoadingInfo")
 		cancelTo := timeout("generating popstar picture")
 		go func() {
-			promptString := webcamUrl + " https://s.mj.run/DxMAyfGMFTY ultrarealistic picture of a " + gender + " as a popstar on the concert stage, microphone in their hand --iw 2 "
+			promptString := webcamUrl + " ::5 https://s.mj.run/uq4o9biF5xE ::2 https://s.mj.run/RO10W18y-fs ::3 ultrarealistic picture of a " + gender + " as a popstar on the concert stage, microphone in the hand, crowd cheering  "
 			resChan := server.SentPrompt(promptString)
 			expo2Gen(webcamUrl)
 			if err := promptResult.Set(<-resChan); err != nil {
@@ -240,10 +277,10 @@ func CreateScenario() fyne.CanvasObject {
 		}()
 	})
 	button6 := widget.NewButton(genderVeriation("Fußballer", "Fußballerin"), func() {
-		_ = flow.GoTo("Loading")
+		_ = flow.GoTo("LoadingInfo")
 		cancelTo := timeout("generating football player picture")
 		go func() {
-			promptString := webcamUrl + " ::4 https://s.mj.run/J0aQ9gVwN6k ::1 photographic of a " + gender + " as a football player in a press conference, logos in the background"
+			promptString := webcamUrl + " https://s.mj.run/Cu-A9Snrr4I photographic of a " + gender + " as a football player in a press conference, logos in the background, wearing a jersey --iw 2"
 			resChan := server.SentPrompt(promptString)
 			expo2Gen(webcamUrl)
 			if err := promptResult.Set(<-resChan); err != nil {
@@ -254,10 +291,10 @@ func CreateScenario() fyne.CanvasObject {
 		}()
 	})
 	button7 := widget.NewButton(genderVeriation("Abenteurer", "Abenteurerin"), func() {
-		_ = flow.GoTo("Loading")
+		_ = flow.GoTo("LoadingInfo")
 		cancelTo := timeout("generating adventure picture")
 		go func() {
-			promptString := webcamUrl + " ::5 https://s.mj.run/_zpWilkBFyQ ::1 ultrarealistic picture of a " + gender + " in a jungle sitting in the trees, beige clothes and a hat "
+			promptString := webcamUrl + " ::5 https://s.mj.run/_zpWilkBFyQ ::1 ultrarealistic picture of a  " + gender + "  outdoors in a jungle sitting in the trees, beige clothes and a hat "
 			resChan := server.SentPrompt(promptString)
 			expo2Gen(webcamUrl)
 			if err := promptResult.Set(<-resChan); err != nil {
@@ -268,7 +305,7 @@ func CreateScenario() fyne.CanvasObject {
 		}()
 	})
 	button8 := widget.NewButton("Model", func() {
-		_ = flow.GoTo("Loading")
+		_ = flow.GoTo("LoadingInfo")
 		cancelTo := timeout("generating model picture")
 		go func() {
 			promptString := webcamUrl + " ::4 https://s.mj.run/BzHMDLF1RhE ::1 photographic picture of a " + gender + " as a model wearing haute couture on the catwalk "
@@ -282,7 +319,7 @@ func CreateScenario() fyne.CanvasObject {
 		}()
 	})
 	button9 := widget.NewButton("Im TED-Talk", func() {
-		_ = flow.GoTo("Loading")
+		_ = flow.GoTo("LoadingInfo")
 		cancelTo := timeout("generating ted talk picture")
 		go func() {
 			promptString := webcamUrl + " ::4 https://s.mj.run/qcnxNbyX9hE ::1 Create a photograph of a " + gender + " holding a motivational speech at a TEDtalk. They are standing on a red, round carpet. There are people sitting in the crowd. \"TED\" --v 6.0 "
@@ -301,14 +338,19 @@ func CreateScenario() fyne.CanvasObject {
 		_ = promptResult.Set("")
 	})
 
+	text3 := canvas.NewText(" ", color.White)
+	text3.TextSize = 30
+
 	top := container.New(layout.NewGridLayout(1), layout.NewSpacer(), text1)
 
 	middle := container.New(layout.NewGridLayout(1), layout.NewSpacer(),
 		container.New(layout.NewGridLayout(3), button1, button2, button3, button4, button5, button6, button7, button8, button9), layout.NewSpacer())
 
+	textGrid := container.New(layout.NewGridWrapLayout(fyne.NewSize(70, 70)), text3)
+
 	stack := container.NewStack(
 		container.NewHBox(container.NewVBox(buttonBeenden)),
-		container.NewBorder(top, bottom, nil, nil,
+		container.NewBorder(top, bottom, textGrid, textGrid,
 			middle))
 
 	return stack
@@ -348,25 +390,25 @@ func LoadingInfo() fyne.CanvasObject {
 
 	switch rand.Intn(9) {
 	case 0:
-		textForString = "Wussten Sie,... \n… dass an der Entwicklung dieses Projektes Studenten der Hochschule Heilbronn & Hochschule Pforzheim beteiligt waren? Unseren Namen:  Frank, Franziska, Maria und Yagmur."
+		textForString = "Wussten Sie, dass an der Entwicklung dieses Projektes Studenten der Hochschule Heilbronn & Hochschule Pforzheim beteiligt waren? Unseren Namen:  Frank, Franziska, Maria und Yagmur."
 	case 1:
-		textForString = "Wussten Sie... \n… wie unsere KI-Bilder generiert werden? Von einem aus zufälligen Pixeln erstellten Bild, wird ein Foto konstruiert."
+		textForString = "Wussten Sie wie unsere KI-Bilder generiert werden? Von einem aus zufälligen Pixeln erstellten Bild, wird ein Foto konstruiert."
 	case 2:
-		textForString = "Wussten Sie... \n… die Bilder die Sie sehen, sind nach dem aktuellen Stand der Technik die besten Deepfakes die ohne zusätzliche Fachkenntnisse möglich sind ?  Schnell und Einfach also!"
+		textForString = "Wussten Sie die Bilder die Sie sehen, sind nach dem aktuellen Stand der Technik die besten Deepfakes die ohne zusätzliche Fachkenntnisse möglich sind ?  Schnell und Einfach also!"
 	case 3:
-		textForString = "Wussten Sie... \n… welche Eingaben wir benötigen um diese Bilder zu generieren? Ein Bild von Ihnen, ein Hintergrundbild (optional) und eine textuelle Beschreibung der Szene."
+		textForString = "Wussten Sie welche Eingaben wir benötigen um diese Bilder zu generieren? Ein Bild von Ihnen, ein Hintergrundbild (optional) und eine textuelle Beschreibung der Szene."
 	case 4:
-		textForString = "Wussten Sie... \n…  worin sich unsere Deepfakes von denen die man im Internet sieht unterscheiden?  Sie stammen von geübten KI Profis und wurden manuell nachbearbeitet. Der gesamte Erstellungsprozess eines Deepfakes dauert Stunden und Tage."
+		textForString = "Wussten Sie worin sich unsere Deepfakes von denen die man im Internet sieht unterscheiden?  Sie stammen von geübten KI Profis und wurden manuell nachbearbeitet. Der gesamte Erstellungsprozess eines Deepfakes dauert Stunden und Tage."
 	case 5:
-		textForString = "Wussten Sie,... \n… dass der Begriff \"Deepfake\" 2017 auf Reddit geprägt wurde und sich aus den Wörtern \"deep\" (tief), wie in der KI-Tiefenlerntechnologie, und \"fake\" (gefälscht) zusammensetzt ?"
+		textForString = "Wussten Sie, dass der Begriff \"Deepfake\" 2017 auf Reddit geprägt wurde und sich aus den Wörtern \"deep\" (tief), wie in der KI-Tiefenlerntechnologie, und \"fake\" (gefälscht) zusammensetzt ?"
 	case 6:
-		textForString = "Wussten Sie... \n… professionelle Deepfakes können für verschiedene Zwecke verwendet werden, z. B. für Unterhaltung, Betrug oder Propaganda ?"
+		textForString = "Wussten Sie professionelle Deepfakes können für verschiedene Zwecke verwendet werden, z. B. für Unterhaltung, Betrug oder Propaganda ?"
 	case 7:
-		textForString = "Wussten Sie,... \n… dass KI-Modelle, die mit Bildern trainiert werden, Vorurteile übernehmen können, wenn die Trainingsdaten selbst stereotypisch sind?"
+		textForString = "Wussten Sie, dass KI-Modelle, die mit Bildern trainiert werden, Vorurteile übernehmen können, wenn die Trainingsdaten selbst stereotypisch sind?"
 	case 8:
-		textForString = "Wussten Sie,... \n… dass einige Länder bereits Gesetze erlassen haben, die die Erstellung und Verbreitung von Deepfakes, die für böswillige Zwecke verwendet werden, verbieten?"
+		textForString = "Wussten Sie, dass einige Länder bereits Gesetze erlassen haben, die die Erstellung und Verbreitung von Deepfakes, die für böswillige Zwecke verwendet werden, verbieten?"
 	case 9:
-		textForString = "Wussten Sie,... \n… dass Deepfakes verwendet werden können, um Menschen in Situationen zu bringen, in denen sie sich nicht befinden (wollen)?"
+		textForString = "Wussten Sie, dass Deepfakes verwendet werden können, um Menschen in Situationen zu bringen, in denen sie sich nicht befinden (wollen)?"
 	}
 
 	text3 := canvas.NewText(textForString, color.White)
@@ -374,10 +416,13 @@ func LoadingInfo() fyne.CanvasObject {
 	text3.Alignment = fyne.TextAlignCenter
 	text3.TextStyle = fyne.TextStyle{Monospace: true}
 
+	text4 := canvas.NewText(" ", color.White)
+	text4.TextSize = 60
+
 	return container.NewBorder(
 		nil, bottom, nil, nil,
 		container.NewCenter(
-			container.NewVBox(text1, text2, layout.NewSpacer(), text3),
+			container.NewVBox(text1, text2, text4, text3),
 		))
 }
 
@@ -502,4 +547,27 @@ func ShowPic() fyne.CanvasObject {
 					})))))
 
 	return stack
+}
+
+func Countdown() fyne.CanvasObject {
+	// Container mit Canvas erstellen
+	flashRec := canvas.NewRectangle(color.White)
+	flashContainer := container.New(layout.NewGridLayout(1), flashRec)
+
+	countdown := 3
+	countdownLabel := canvas.NewText("", color.White)
+	countdownLabel.Alignment = fyne.TextAlignCenter
+
+	//countdownContainer := container.New(layout.NewGridLayout(1), countdownLabel)
+
+	for countdown > 0 {
+		countdownLabel.Text = fmt.Sprint(countdown)
+		time.Sleep(time.Second)
+		countdown--
+	}
+
+	stack := container.NewStack(flashContainer)
+	_ = flow.GoTo("Loading")
+	return stack
+
 }
