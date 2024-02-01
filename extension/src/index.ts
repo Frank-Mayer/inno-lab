@@ -27,9 +27,9 @@ window.setTimeout(() => {
                 console.error(e);
                 cleanup();
             }
-        }, 1000),
+        }, 5000),
     );
-}, 5000);
+}, 2500);
 
 const reportedMessages = new Set<string>();
 console.debug("Starting message interval");
@@ -65,7 +65,10 @@ function watchForNewMessages() {
         }
 
         // Ignore messages that are not 100% complete (regex in message.innerHTML)
-        if (message.innerHTML.includes("Waiting to start") || message.innerHTML.includes("<span>%</span>")) {
+        if (
+            message.innerHTML.includes("Waiting to start") ||
+            message.innerHTML.includes("<span>%</span>")
+        ) {
             continue;
         }
 

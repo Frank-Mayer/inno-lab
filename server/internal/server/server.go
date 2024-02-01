@@ -60,6 +60,7 @@ func setInputPos(w http.ResponseWriter, r *http.Request) {
 			log.Error("Error unmarshalling message", "error", err)
 			break
 		}
+		log.Debug("Received input position", "x", pos.X, "y", pos.Y)
 		inputPosX = int(pos.X)
 		inputPosY = int(pos.Y)
 	}
