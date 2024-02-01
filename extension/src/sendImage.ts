@@ -3,6 +3,10 @@ import { Res } from "./schema/res";
 const url = "ws://localhost:8080/send_image";
 let socket: WebSocket | null = null;
 
+connect();
+
+window.setInterval(ping, 10000);
+
 function connect() {
     if (socket && socket.readyState === WebSocket.OPEN) {
         return;
@@ -17,7 +21,17 @@ function connect() {
     });
 }
 
-connect();
+function ping() {
+    if (!socket) {
+        connect();
+        return;
+    }
+    if (socket.readyState !== WebSocket.OPEN) {
+        connect();
+        return;
+    }
+    socket.send("ping");
+}
 
 export function sendImage(prompt: string, src: string, date: Date) {
     if (!socket) {

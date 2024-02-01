@@ -79,6 +79,13 @@ func sendImage(w http.ResponseWriter, r *http.Request) {
 			log.Error("Error reading message", "error", err)
 			break
 		}
+
+		// ping?
+		if string(b) == "ping" {
+			log.Debug("send_image ping")
+			continue
+		}
+
 		res := schema.Res{}
 		err = proto.Unmarshal(b, &res)
 		if err != nil {
