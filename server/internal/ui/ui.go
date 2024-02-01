@@ -110,7 +110,7 @@ func UiUiError() fyne.CanvasObject {
 // It returns a function that can be called to cancel the timeout.
 func timeout(action string) func() {
 	// timeout after 10 seconds
-	t := time.NewTimer(5 * time.Minute)
+	t := time.NewTimer(2 * time.Minute)
 	go func() {
 		<-t.C
 		displayError(errors.Errorf("Timeout: %s", action))
