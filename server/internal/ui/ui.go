@@ -478,7 +478,7 @@ func CameraLook() fyne.CanvasObject {
 	text1.Alignment = fyne.TextAlignCenter
 	text1.TextStyle = fyne.TextStyle{Monospace: true}
 
-	text2 := canvas.NewText("Schauen Sie gerade in die Kamera über dem Bildschirm.", color.White)
+	text2 := canvas.NewText("Schauen Sie gerade in die Kamera links vom Bildschirm.", color.White)
 	text2.TextSize = 20
 	text2.Alignment = fyne.TextAlignCenter
 	text2.TextStyle = fyne.TextStyle{Monospace: true}
