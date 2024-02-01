@@ -212,7 +212,7 @@ func CreateScenario() fyne.CanvasObject {
 		_ = flow.GoTo("LoadingInfo")
 		cancelTo := timeout("generating politician picture")
 		go func() {
-			promptString := webcamUrl + "  ::4 https://s.mj.run/nMc61C0HasE ::1 photographic picture of a  " + gender + "  as a politican in the Bundestag "
+			promptString := webcamUrl + "  ::4 https://l.frankmayer.dev/v_politik ::1 photographic picture of a  " + gender + "  as a politican in the Bundestag "
 			resUrlChan := server.SentPrompt(promptString)
 			expo2Gen(webcamUrl)
 			if err := promptResult.Set(<-resUrlChan); err != nil {
@@ -226,7 +226,7 @@ func CreateScenario() fyne.CanvasObject {
 		_ = flow.GoTo("LoadingInfo")
 		cancelTo := timeout("generating astronaut picture")
 		go func() {
-			promptString := webcamUrl + " ::4 https://s.mj.run/QY2Z4ddoxck ::1 ultrarealistic picture of a " + gender + " as an astronaut in a space suit, stars and planets in the background "
+			promptString := webcamUrl + " ::4 https://l.frankmayer.dev/v_astronaut ::1 ultrarealistic picture of a " + gender + " as an astronaut in a space suit, stars and planets in the background "
 			resChan := server.SentPrompt(promptString)
 			expo2Gen(webcamUrl)
 			if err := promptResult.Set(<-resChan); err != nil {
@@ -240,7 +240,7 @@ func CreateScenario() fyne.CanvasObject {
 		_ = flow.GoTo("LoadingInfo")
 		cancelTo := timeout("generating holiday picture")
 		go func() {
-			promptString := webcamUrl + "::4 https://s.mj.run/wb3_lBMHQZw ::1 ultrarealistic picture of a " + gender + " at a holiday resort. warm tones --v 5.2 "
+			promptString := webcamUrl + "::4 https://l.frankmayer.dev/v_urlaub ::1 ultrarealistic picture of a " + gender + " at a holiday resort. warm tones --v 5.2 "
 			resChan := server.SentPrompt(promptString)
 			expo2Gen(webcamUrl)
 			if err := promptResult.Set(<-resChan); err != nil {
@@ -268,7 +268,7 @@ func CreateScenario() fyne.CanvasObject {
 		_ = flow.GoTo("LoadingInfo")
 		cancelTo := timeout("generating popstar picture")
 		go func() {
-			promptString := webcamUrl + " ::5 https://s.mj.run/uq4o9biF5xE ::2 https://s.mj.run/RO10W18y-fs ::3 ultrarealistic picture of a " + gender + " as a popstar on the concert stage, microphone in the hand, crowd cheering  "
+			promptString := webcamUrl + " ::5 https://l.frankmayer.dev/v_popstar1 ::2 https://l.frankmayer.dev/v_popstar2 ::3 ultrarealistic picture of a " + gender + " as a popstar on the concert stage, microphone in the hand, crowd cheering  "
 			resChan := server.SentPrompt(promptString)
 			expo2Gen(webcamUrl)
 			if err := promptResult.Set(<-resChan); err != nil {
@@ -282,7 +282,7 @@ func CreateScenario() fyne.CanvasObject {
 		_ = flow.GoTo("LoadingInfo")
 		cancelTo := timeout("generating football player picture")
 		go func() {
-			promptString := webcamUrl + " https://s.mj.run/Cu-A9Snrr4I photographic of a " + gender + " as a football player in a press conference, logos in the background, wearing a jersey --iw 2"
+			promptString := webcamUrl + " https://l.frankmayer.dev/v_fußball photographic of a " + gender + " as a football player in a press conference, logos in the background, wearing a jersey --iw 2"
 			resChan := server.SentPrompt(promptString)
 			expo2Gen(webcamUrl)
 			if err := promptResult.Set(<-resChan); err != nil {
@@ -296,7 +296,7 @@ func CreateScenario() fyne.CanvasObject {
 		_ = flow.GoTo("LoadingInfo")
 		cancelTo := timeout("generating adventure picture")
 		go func() {
-			promptString := webcamUrl + " ::5 https://s.mj.run/_zpWilkBFyQ ::1 ultrarealistic picture of a  " + gender + "  outdoors in a jungle sitting in the trees, beige clothes and a hat "
+			promptString := webcamUrl + " ::5 https://l.frankmayer.dev/v_jungle ::1 ultrarealistic picture of a  " + gender + "  outdoors in a jungle sitting in the trees, beige clothes and a hat "
 			resChan := server.SentPrompt(promptString)
 			expo2Gen(webcamUrl)
 			if err := promptResult.Set(<-resChan); err != nil {
@@ -310,7 +310,7 @@ func CreateScenario() fyne.CanvasObject {
 		_ = flow.GoTo("LoadingInfo")
 		cancelTo := timeout("generating model picture")
 		go func() {
-			promptString := webcamUrl + " ::4 https://s.mj.run/BzHMDLF1RhE ::1 photographic picture of a " + gender + " as a model wearing haute couture on the catwalk "
+			promptString := webcamUrl + " ::4 https://l.frankmayer.dev/v_model ::1 photographic picture of a " + gender + " as a model wearing haute couture on the catwalk "
 			resChan := server.SentPrompt(promptString)
 			expo2Gen(webcamUrl)
 			if err := promptResult.Set(<-resChan); err != nil {
@@ -324,7 +324,7 @@ func CreateScenario() fyne.CanvasObject {
 		_ = flow.GoTo("LoadingInfo")
 		cancelTo := timeout("generating ted talk picture")
 		go func() {
-			promptString := webcamUrl + " ::4 https://s.mj.run/qcnxNbyX9hE ::1 Create a photograph of a " + gender + " holding a motivational speech at a TEDtalk. They are standing on a red, round carpet. There are people sitting in the crowd. \"TED\" --v 6.0 "
+			promptString := webcamUrl + " ::4 https://l.frankmayer.dev/v_ted ::1 Create a photograph of a " + gender + " holding a motivational speech at a TEDtalk. They are standing on a red, round carpet. There are people sitting in the crowd. \"TED\" --v 6.0 "
 			resChan := server.SentPrompt(promptString)
 			expo2Gen(webcamUrl)
 			if err := promptResult.Set(<-resChan); err != nil {
