@@ -31,6 +31,9 @@ export function sendImage(prompt: string, src: string, date: Date) {
 
     if (socket.readyState !== WebSocket.OPEN) {
         console.warn("Socket not open", socket.readyState);
+        window.setTimeout(() => {
+            sendImage(prompt, src, date);
+        }, 1000);
         return;
     }
     const pos = Res.create({ prompt, src, time: date.getTime() });

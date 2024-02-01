@@ -24,6 +24,7 @@ export function sendInputPos(x: number, y: number) {
         return;
     }
     if (socket.readyState !== WebSocket.OPEN) {
+        connect();
         return;
     }
     const pos = Pos.create({ x, y });
