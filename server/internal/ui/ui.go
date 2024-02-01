@@ -444,7 +444,7 @@ func expo2Gen(webcamUrl string) {
 	case 0:
 		server.SendBackgroundPrompt(
 			webcamUrl +
-				" https://s.mj.run/H2OCJUnS3T8 photographic picture of a " + gender + " in front of the building π --iw 2")
+				" https://l.frankmayer.dev/v_2_1 photographic picture of a " + gender + " in front of the building π --iw 2")
 	case 1:
 		server.SendBackgroundPrompt(
 			webcamUrl +
@@ -452,7 +452,7 @@ func expo2Gen(webcamUrl string) {
 	case 2:
 		server.SendBackgroundPrompt(
 			webcamUrl +
-				" ::3 https://s.mj.run/c17w4yFMpsc ::1 Create an photograph of a " + gender + " sitting on the bus who is looking out of the window. The picture has warm tones, because the sun is shining. π --s 0 --v 6.0")
+				" ::3 https://l.frankmayer.dev/v_2_0 ::1 Create an photograph of a " + gender + " sitting on the bus who is looking out of the window. The picture has warm tones, because the sun is shining. π --s 0 --v 6.0")
 	case 3:
 		server.SendBackgroundPrompt(
 			webcamUrl +
