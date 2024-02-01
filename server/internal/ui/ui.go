@@ -48,26 +48,26 @@ func Init() fyne.Window {
 	logohp = canvas.NewImageFromResource(rschp)
 
 	txtfrk := canvas.NewText("Franziska", color.White)
-	txtfrk.TextSize = 10
+	txtfrk.TextSize = 20
 	txtfrk.Alignment = fyne.TextAlignCenter
 	txtfrk.TextStyle = fyne.TextStyle{Monospace: true}
 
 	txtfrz := canvas.NewText("Frank", color.White)
-	txtfrz.TextSize = 10
+	txtfrz.TextSize = 20
 	txtfrz.Alignment = fyne.TextAlignCenter
 	txtfrz.TextStyle = fyne.TextStyle{Monospace: true}
 
 	txtmm := canvas.NewText("Maria-Magdalena", color.White)
-	txtmm.TextSize = 10
+	txtmm.TextSize = 20
 	txtmm.Alignment = fyne.TextAlignCenter
 	txtmm.TextStyle = fyne.TextStyle{Monospace: true}
 
 	txtym := canvas.NewText("Yagmur Mine", color.White)
-	txtym.TextSize = 10
+	txtym.TextSize = 20
 	txtym.Alignment = fyne.TextAlignCenter
 	txtym.TextStyle = fyne.TextStyle{Monospace: true}
 
-	var logoGrid fyne.CanvasObject = container.New(layout.NewCenterLayout(), container.New(layout.NewGridWrapLayout(fyne.NewSize(150, 50)), logo), layout.NewSpacer())
+	var logoGrid fyne.CanvasObject = container.New(layout.NewCenterLayout(), container.New(layout.NewGridWrapLayout(fyne.NewSize(200, 75)), logo), layout.NewSpacer())
 	var hhnGrid fyne.CanvasObject = container.New(layout.NewCenterLayout(), container.New(layout.NewGridWrapLayout(fyne.NewSize(175, 100)), logohhn), layout.NewSpacer())
 	var hpGrid fyne.CanvasObject = container.New(layout.NewCenterLayout(), container.New(layout.NewGridWrapLayout(fyne.NewSize(175, 100)), logohp), layout.NewSpacer())
 	bottom = container.New(layout.NewGridLayout(9), hpGrid, layout.NewSpacer(), txtfrk, txtfrz, logoGrid, txtmm, txtym, layout.NewSpacer(), hhnGrid)
@@ -140,7 +140,7 @@ func displayError(err error) {
 }
 
 func CreateUI() fyne.CanvasObject {
-	text1 := canvas.NewText("Bevor es losgeht... Wie möchten Sie angesprochen werden", color.White)
+	text1 := canvas.NewText("Bevor es losgeht... Wie möchten Sie angesprochen werden?", color.White)
 	text1.TextSize = 30
 	text1.Alignment = fyne.TextAlignCenter
 	text1.TextStyle = fyne.TextStyle{Monospace: true}
@@ -159,11 +159,11 @@ func CreateUI() fyne.CanvasObject {
 	})
 	//Non-Binary Button?
 
-	middle := container.New(layout.NewCenterLayout(),
-		container.New(layout.NewGridLayout(1), text1,
-			container.New(layout.NewGridLayout(2),
-				container.New(layout.NewGridWrapLayout(fyne.NewSize(600, 400)), button1),
-				container.New(layout.NewGridWrapLayout(fyne.NewSize(600, 400)), button2))))
+	middle := container.New(layout.NewGridLayout(
+		1), text1, container.New(layout.NewCenterLayout(),
+		container.New(layout.NewGridLayout(2),
+			container.New(layout.NewGridWrapLayout(fyne.NewSize(600, 400)), button1),
+			container.New(layout.NewGridWrapLayout(fyne.NewSize(600, 400)), button2))))
 
 	textGrid := container.New(layout.NewGridWrapLayout(fyne.NewSize(70, 70)), text2)
 
@@ -414,7 +414,7 @@ func LoadingInfo() fyne.CanvasObject {
 	}
 
 	text3 := canvas.NewText(textForString, color.White)
-	text3.TextSize = 30
+	text3.TextSize = 12
 	text3.Alignment = fyne.TextAlignCenter
 	text3.TextStyle = fyne.TextStyle{Monospace: true}
 
@@ -422,7 +422,7 @@ func LoadingInfo() fyne.CanvasObject {
 	text4.TextSize = 60
 
 	return container.NewBorder(
-		nil, bottom, nil, nil,
+		nil, bottom, text4, text4,
 		container.NewCenter(
 			container.NewVBox(text1, text2, text4, text3),
 		))
