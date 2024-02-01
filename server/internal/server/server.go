@@ -164,7 +164,7 @@ func htmlImage(index int) string {
     <div id="image" style="background-image: url('https://raw.githubusercontent.com/Frank-Mayer/inno-lab/main/logo.png'); background-size: contain; background-repeat: no-repeat; background-position: center center; width: 100vw; height: 100vh;"></div>
     <style>
         :root {
-            background-color: rgb(23, 23, 24);
+            background-color: black;
         }
         * {
             margin: 0;
