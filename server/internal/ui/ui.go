@@ -282,7 +282,7 @@ func CreateScenario() fyne.CanvasObject {
 		_ = flow.GoTo("LoadingInfo")
 		cancelTo := timeout("generating football player picture")
 		go func() {
-			promptString := webcamUrl + " https://l.frankmayer.dev/v_fußball photographic of a " + gender + " as a football player in a press conference, logos in the background, wearing a jersey --iw 2"
+			promptString := webcamUrl + " https://l.frankmayer.dev/v_fussball photographic of a " + gender + " as a football player in a press conference, logos in the background, wearing a jersey --iw 2"
 			resChan := server.SentPrompt(promptString)
 			expo2Gen(webcamUrl)
 			if err := promptResult.Set(<-resChan); err != nil {
