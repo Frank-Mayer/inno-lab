@@ -1,6 +1,7 @@
 import { getPromptPos } from "./logic";
 import { sendImage } from "./sendImage";
 import { sendInputPos } from "./sendInputPos";
+import "./dontClick";
 
 const intervals = new Set<number>();
 
