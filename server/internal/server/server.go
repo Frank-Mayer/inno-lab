@@ -35,6 +35,25 @@ func focusBack() {
 	robotgo.MoveRelative(1791, -400)
 }
 
+func Reset() {
+	inputPosX = -1
+	inputPosY = -1
+	expectsImage.Store(false)
+	go func() {
+		urlCh <- ""
+	}()
+	for i := 0; i != 2; i++ {
+		select {
+		case <-promptCh:
+		default:
+		}
+		select {
+		case <-urlCh:
+		default:
+		}
+	}
+}
+
 func handleIndex(w http.ResponseWriter, r *http.Request) {
 	// redirect to discord
 	http.Redirect(w, r, "https://discord.com/channels/@me/1019912799977230416", http.StatusTemporaryRedirect)

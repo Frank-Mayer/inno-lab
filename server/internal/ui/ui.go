@@ -95,7 +95,7 @@ func UiUiError() fyne.CanvasObject {
 	log.Debug("Displaying error ui", "error", err)
 	vbox := container.NewVBox(
 		canvas.NewText("Da lief was schief :(", color.RGBA{R: 255, G: 0, B: 0, A: 255}),
-		canvas.NewText("Bitte gib dem Personal bescheid", color.White),
+		canvas.NewText("Das Programm wird gleich neu gestarted", color.White),
 	)
 	if err != "" {
 		// split error message into multiple lines
@@ -103,6 +103,17 @@ func UiUiError() fyne.CanvasObject {
 			vbox.Add(canvas.NewText(line, color.White))
 		}
 	}
+
+	go func() {
+		<-time.After(10 * time.Second)
+		if flow.Current() == "error" {
+			_ = flow.GoTo("CreateUI")
+			server.Reset()
+		} else {
+			log.Warn("Canceled restart of UI because flow has already moved on", "current", flow.Current())
+		}
+	}()
+
 	return container.NewBorder(nil, bottom, nil, nil, vbox)
 }
 
@@ -210,13 +221,18 @@ func CreateScenario() fyne.CanvasObject {
 
 	button1 := widget.NewButton(genderVeriation("Politiker", "Politikerin"), func() {
 		_ = flow.GoTo("LoadingInfo")
-		<-time.After(2 * time.Second)
+		<-time.After(3 * time.Second)
 		cancelTo := timeout("generating politician picture")
 		go func() {
 			promptString := webcamUrl + "  ::4 https://l.frankmayer.dev/v_politik ::1 photographic picture of a  " + gender + "  as a politican in the Bundestag "
-			resUrlChan := server.SentPrompt(promptString)
+			resChan := server.SentPrompt(promptString)
 			expo2Gen(webcamUrl)
-			if err := promptResult.Set(<-resUrlChan); err != nil {
+			res := <-resChan
+			if res == "" {
+				log.Warn("Prompt result is empty")
+				return
+			}
+			if err := promptResult.Set(res); err != nil {
 				log.Error("Failed to set prompt result", "error", err)
 			}
 			_ = flow.GoTo("ShowPic")
@@ -225,13 +241,18 @@ func CreateScenario() fyne.CanvasObject {
 	})
 	button2 := widget.NewButton(genderVeriation("Astronaut", "Astronautin"), func() {
 		_ = flow.GoTo("LoadingInfo")
-		<-time.After(2 * time.Second)
+		<-time.After(3 * time.Second)
 		cancelTo := timeout("generating astronaut picture")
 		go func() {
 			promptString := webcamUrl + " ::4 https://l.frankmayer.dev/v_astronaut ::1 ultrarealistic picture of a " + gender + " as an astronaut in a space suit, stars and planets in the background "
 			resChan := server.SentPrompt(promptString)
 			expo2Gen(webcamUrl)
-			if err := promptResult.Set(<-resChan); err != nil {
+			res := <-resChan
+			if res == "" {
+				log.Warn("Prompt result is empty")
+				return
+			}
+			if err := promptResult.Set(res); err != nil {
 				log.Error("Failed to set prompt result", "error", err)
 			}
 			_ = flow.GoTo("ShowPic")
@@ -240,13 +261,18 @@ func CreateScenario() fyne.CanvasObject {
 	})
 	button3 := widget.NewButton("Im Urlaub", func() {
 		_ = flow.GoTo("LoadingInfo")
-		<-time.After(2 * time.Second)
+		<-time.After(3 * time.Second)
 		cancelTo := timeout("generating holiday picture")
 		go func() {
 			promptString := webcamUrl + "::4 https://l.frankmayer.dev/v_urlaub ::1 ultrarealistic picture of a " + gender + " at a holiday resort. warm tones --v 5.2 "
 			resChan := server.SentPrompt(promptString)
 			expo2Gen(webcamUrl)
-			if err := promptResult.Set(<-resChan); err != nil {
+			res := <-resChan
+			if res == "" {
+				log.Warn("Prompt result is empty")
+				return
+			}
+			if err := promptResult.Set(res); err != nil {
 				log.Error("Failed to set prompt result", "error", err)
 			}
 			_ = flow.GoTo("ShowPic")
@@ -255,7 +281,7 @@ func CreateScenario() fyne.CanvasObject {
 	})
 	button4 := widget.NewButton("Imagewechsel", func() {
 		_ = flow.GoTo("LoadingInfo")
-		<-time.After(2 * time.Second)
+		<-time.After(3 * time.Second)
 		cancelTo := timeout("generating image change picture")
 		go func() {
 			promptString := webcamUrl + " ultrarealistic picture of a " + gender + " heavily tattood with piercings in their face, in the background you can see a tattoo parlor --iw 2 "
@@ -270,13 +296,18 @@ func CreateScenario() fyne.CanvasObject {
 	})
 	button5 := widget.NewButton("Pop-Star", func() {
 		_ = flow.GoTo("LoadingInfo")
-		<-time.After(2 * time.Second)
+		<-time.After(3 * time.Second)
 		cancelTo := timeout("generating popstar picture")
 		go func() {
 			promptString := webcamUrl + " ::5 https://l.frankmayer.dev/v_popstar1 ::2 https://l.frankmayer.dev/v_popstar2 ::3 ultrarealistic picture of a " + gender + " as a popstar on the concert stage, microphone in the hand, crowd cheering  "
 			resChan := server.SentPrompt(promptString)
 			expo2Gen(webcamUrl)
-			if err := promptResult.Set(<-resChan); err != nil {
+			res := <-resChan
+			if res == "" {
+				log.Warn("Prompt result is empty")
+				return
+			}
+			if err := promptResult.Set(res); err != nil {
 				log.Error("Failed to set prompt result", "error", err)
 			}
 			_ = flow.GoTo("ShowPic")
@@ -285,13 +316,18 @@ func CreateScenario() fyne.CanvasObject {
 	})
 	button6 := widget.NewButton(genderVeriation("Fußballer", "Fußballerin"), func() {
 		_ = flow.GoTo("LoadingInfo")
-		<-time.After(2 * time.Second)
+		<-time.After(3 * time.Second)
 		cancelTo := timeout("generating football player picture")
 		go func() {
 			promptString := webcamUrl + " https://l.frankmayer.dev/v_fussball photographic of a " + gender + " as a football player in a press conference, logos in the background, wearing a jersey --iw 2"
 			resChan := server.SentPrompt(promptString)
 			expo2Gen(webcamUrl)
-			if err := promptResult.Set(<-resChan); err != nil {
+			res := <-resChan
+			if res == "" {
+				log.Warn("Prompt result is empty")
+				return
+			}
+			if err := promptResult.Set(res); err != nil {
 				log.Error("Failed to set prompt result", "error", err)
 			}
 			_ = flow.GoTo("ShowPic")
@@ -300,13 +336,18 @@ func CreateScenario() fyne.CanvasObject {
 	})
 	button7 := widget.NewButton(genderVeriation("Abenteurer", "Abenteurerin"), func() {
 		_ = flow.GoTo("LoadingInfo")
-		<-time.After(2 * time.Second)
+		<-time.After(3 * time.Second)
 		cancelTo := timeout("generating adventure picture")
 		go func() {
 			promptString := webcamUrl + " ::5 https://l.frankmayer.dev/v_jungle ::1 ultrarealistic picture of a  " + gender + "  outdoors in a jungle sitting in the trees, beige clothes and a hat "
 			resChan := server.SentPrompt(promptString)
 			expo2Gen(webcamUrl)
-			if err := promptResult.Set(<-resChan); err != nil {
+			res := <-resChan
+			if res == "" {
+				log.Warn("Prompt result is empty")
+				return
+			}
+			if err := promptResult.Set(res); err != nil {
 				log.Error("Failed to set prompt result", "error", err)
 			}
 			_ = flow.GoTo("ShowPic")
@@ -315,13 +356,18 @@ func CreateScenario() fyne.CanvasObject {
 	})
 	button8 := widget.NewButton("Model", func() {
 		_ = flow.GoTo("LoadingInfo")
-		<-time.After(2 * time.Second)
+		<-time.After(3 * time.Second)
 		cancelTo := timeout("generating model picture")
 		go func() {
 			promptString := webcamUrl + " ::4 https://l.frankmayer.dev/v_model ::1 photographic picture of a " + gender + " as a model wearing haute couture on the catwalk "
 			resChan := server.SentPrompt(promptString)
 			expo2Gen(webcamUrl)
-			if err := promptResult.Set(<-resChan); err != nil {
+			res := <-resChan
+			if res == "" {
+				log.Warn("Prompt result is empty")
+				return
+			}
+			if err := promptResult.Set(res); err != nil {
 				log.Error("Failed to set prompt result", "error", err)
 			}
 			_ = flow.GoTo("ShowPic")
@@ -330,13 +376,18 @@ func CreateScenario() fyne.CanvasObject {
 	})
 	button9 := widget.NewButton("Im TED-Talk", func() {
 		_ = flow.GoTo("LoadingInfo")
-		<-time.After(2 * time.Second)
+		<-time.After(3 * time.Second)
 		cancelTo := timeout("generating ted talk picture")
 		go func() {
 			promptString := webcamUrl + " ::4 https://l.frankmayer.dev/v_ted ::1 Create a photograph of a " + gender + " holding a motivational speech at a TEDtalk. They are standing on a red, round carpet. There are people sitting in the crowd. \"TED\" --v 6.0 "
 			resChan := server.SentPrompt(promptString)
 			expo2Gen(webcamUrl)
-			if err := promptResult.Set(<-resChan); err != nil {
+			res := <-resChan
+			if res == "" {
+				log.Warn("Prompt result is empty")
+				return
+			}
+			if err := promptResult.Set(res); err != nil {
 				log.Error("Failed to set prompt result", "error", err)
 			}
 			_ = flow.GoTo("ShowPic")
@@ -392,7 +443,7 @@ func LoadingInfo() fyne.CanvasObject {
 	text1.Alignment = fyne.TextAlignCenter
 	text1.TextStyle = fyne.TextStyle{Monospace: true}
 
-	text2 := canvas.NewText("Fass die Maus bitte nicht an, das Programm ist empfindlich.", color.RGBA{R: 255, G: 0, B: 0, A: 255})
+	text2 := canvas.NewText("Bitte die Maus nicht anfassen, das Programm ist empfindlich.", color.RGBA{R: 255, G: 0, B: 0, A: 255})
 	text2.TextSize = 20
 	text2.Alignment = fyne.TextAlignCenter
 	text2.TextStyle = fyne.TextStyle{Monospace: true}
