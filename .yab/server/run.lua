@@ -1,11 +1,7 @@
 require("env")
-require("proto")
 local yab = require("yab")
-
-local bin_name = require("server.build")
-
-if yab.os_type() == "windows" then
-	os.execute("start " .. bin_name)
-else
-	os.execute("./" .. bin_name)
-end
+yab.setenv("CREDENTIALS_LOCATION","/Users/Shared/veritas/serviceAccountKey.json")
+yab.setenv("FULLSCREEN", "true")
+yab.cd("server", function()
+    os.execute("go run ./cmd/server")
+end)
